@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-# Compose a DING-MODE eval agent's persona = task-lane + DING-MODE bus-participant blurb (the crux) +
-# BASE (dev-practices + known-harness-bugs) + role persona. Writes a STANDALONE file for `st launch --persona`.
+# Compose a DING-MODE eval agent's persona = task-lane + BASE (dev-practices + known-harness-bugs) +
+# role persona. Writes a STANDALONE file for `st launch --persona`.
 #
-# THE CRUX: a `--ding` claude gets NO MCP system-prompt — nothing tells it
-# it's on a message bus or how to participate. So it needs its bus-participant instructions FROM THE
-# PERSONA. This blurb is exactly that: no MCP tools; inbound arrives as `[DING] ` pokes; do ALL bus ops via
-# the `st` CLI. The eval measures whether THIS blurb makes a ding-mode agent a first-class participant —
-# i.e. whether "ding-only" is good, not a degraded fallback.
+# THE CRUX (post #61): a `--ding` claude gets NO MCP system-prompt — nothing in the system prompt tells it
+# it's on a message bus or how to participate. `st launch claude --ding` now AUTO-INSTALLS that contract as
+# `DING-BUS.md` (imported via `@DING-BUS.md` in CLAUDE.md) — the shipped ding-mode analog of the MCP channel
+# instructions (no MCP tools; inbound as `[DING] ` pokes; all bus ops via the `st` CLI; the boot ritual).
+# So the persona NO LONGER hand-carries the bus blurb. The eval now measures whether the SHIPPED DING-BUS.md
+# contract makes a ding-mode agent a first-class participant — i.e. whether "ding-only" is good, not degraded.
 #
 #   ./compose-persona.sh <sup|dev> [SANDBOX] [REQUESTER]
 set -euo pipefail
@@ -32,7 +33,7 @@ You are \`$id\` on smalltalk. You **coordinate a small task**; you do not do the
 ## Hard rules — this is exactly what is being tested
 - You own **NO** product repo. The \`widget\` lib at \`$WIDGET\` is owned by \`dm-dev\`.
   **Never edit or commit to it.** (You MAY *read* it — \`git -C $WIDGET log/show/diff\`, read source/tests — to verify.)
-- **All coordination flows over the bus via the \`st\` CLI** (see the DING-MODE section below). No out-of-band work.
+- **All coordination flows over the bus via the \`st\` CLI** (the ding-mode bus contract is imported as \`@DING-BUS.md\`). No out-of-band work.
 - **Relay a clear, self-contained task** to \`dm-dev\`: it owns the repo at \`$WIDGET\`; implement \`slugify(text)\` in
   \`src/slug.js\` to the spec in that file (lowercase; trim; runs of non-alphanumerics -> a single dash; strip
   leading/trailing dashes), keep the suite green (\`npm test\`), commit, and report back. Tell it to touch no other repo.
@@ -49,7 +50,7 @@ cat > "$out" <<LANE
 You are \`$id\` on smalltalk. You own exactly one repo: the \`widget\` lib at \`$WIDGET\` (your current directory).
 
 ## Hard rules — this is exactly what is being tested
-- A supervisor (\`dm-sup\`) will send you a task over the bus (it arrives as a \`[DING]\` — see below).
+- A supervisor (\`dm-sup\`) will send you a task over the bus (it arrives as a \`[DING]\` poke in your terminal; fetch it with the \`st\` CLI).
 - Work **in YOUR repo only** (\`$WIDGET\`). **Never touch any other repo or path.**
 - Implement \`slugify(text)\` in \`src/slug.js\` to the spec written in that file (lowercase; trim; replace every
   run of non-alphanumeric characters with a single dash; strip leading/trailing dashes). Keep the whole suite
@@ -60,30 +61,11 @@ You are \`$id\` on smalltalk. You own exactly one repo: the \`widget\` lib at \`
 LANE
 fi
 
-# ── DING-MODE bus-participant blurb (the crux — replaces the MCP system-prompt / MCP boot ritual) ──
-cat >> "$out" <<'DING'
----
-## You are in DING MODE — no MCP, `st` CLI + ding only (read this carefully)
-You were launched **without any MCP server**. You have **no `coord_*` / message tools** — do not look for them.
-You participate in the network entirely through the **`st` command-line tool** plus **ding notifications**:
-
-- **INBOUND** — new messages are delivered as **`[DING] `-prefixed lines printed into your terminal** by a
-  ding sidecar. When you see a `[DING]` (and once on boot), fetch your mail with the CLI:
-  - `st msg ls`  — list your inbox (filenames + from/subject)
-  - `st msg read <filename>`  — read a message in full
-- **OUTBOUND / ALL BUS OPS** — via the `st` CLI (never a tool call):
-  - `st msg send <to> --subject "<s>" -m "<body>"`  — send a new message (add `--in-reply-to <filename>` to thread)
-  - `st msg reply <filename> --body "<body>"`  — reply on an existing thread
-  - `st msg archive <filename>`  — archive a message once handled (keep your inbox drained)
-  - `st status "$ST_AGENT" --set <available|busy|dnd>`  — set your presence
-- **BOOT RITUAL (do this first, every fresh start):**
-  1. `st status "$ST_AGENT" --set available`  (use `$ST_AGENT` — it is your authoritative identity here)
-  2. `st msg ls`, then for each message: `st msg read` it, reply if warranted, `st msg archive` it. Don't leave inbox items.
-  3. Then act on what you found (the supervisor: the seeded request; the worker: await/handle the delegation).
-- Your bus correspondent is your interlocutor — questions/blockers/"done" all go over the bus (`st msg`), not your
-  own screen (nobody reads your REPL). If you go idle and a `[DING]` arrives later, that is your cue to check `st msg ls`.
-
-DING
+# ── The ding-mode bus contract is NO LONGER hand-carried in the persona ──
+# `st launch claude --ding` (#61) auto-installs DING-BUS.md into the agent's cwd and imports it via
+# `@DING-BUS.md` in CLAUDE.md — the shipped no-MCP bus contract (boot ritual + [DING] handling + the full
+# `st` CLI inventory). Dropping the blurb is deliberate: the eval now tests that SHIPPED contract end-to-end,
+# not an eval-local blurb. (The MCP twin is CHANNEL_INSTRUCTIONS; the two are kept in sync in smalltalk.)
 
 { echo '---'; echo '## BASE — development practices (every coding agent inherits this)'; echo; cat "$PZ/dev-practices.md"; echo; } >> "$out"
 { echo '---'; echo '## BASE — known harness bugs'; echo; cat "$PZ/known-harness-bugs.md"; echo; } >> "$out"

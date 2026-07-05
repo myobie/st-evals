@@ -12,9 +12,10 @@ Whether a Claude team launched WITHOUT MCP (`st launch claude --ding`) is a firs
 The load-bearing case is an MCP-less host: MCP servers don't run at all, so a Claude CoS must join via the
 ding sidecar (inbound messages arrive as `[DING] `-prefixed pokes) + the `st` CLI (send/ls/read/reply/archive/
 status) — codex-style. A ding-mode claude gets NO MCP system-prompt, so nothing tells it it's on a bus or how
-to participate: it must get that from its persona. This eval measures whether an explicit ding-mode
-bus-participant blurb makes the agent genuinely competent — i.e. whether "ding-only" is good, not a degraded
-fallback.
+to participate: it gets that from the DING-BUS.md contract that `st launch --ding` auto-installs (#61),
+imported via `@DING-BUS.md` in CLAUDE.md — the shipped ding-mode analog of the MCP channel instructions.
+This eval measures whether that SHIPPED contract makes the agent genuinely competent — i.e. whether
+"ding-only" is good, not a degraded fallback.
 
 The task is small + deterministic (implement slugify(text) to an exact spec) so the FOCUS is the ding-mode
 coordination experience, not task difficulty. A 2-agent team runs the smallest real loop: dm-sup (coordinate-
@@ -39,10 +40,10 @@ dm-sup = "supervisor (manager persona), Claude `st launch claude --ding` --permi
 dm-dev = "specialist (specialist persona), Claude `st launch claude --ding` --permission-mode auto, owns the widget repo, NO MCP"
 posture = "the operator's rule: SUPERVISOR=bypass, WORKER=auto. Ephemeral: role=agent, no strategy=permanent (agent AND ding sidecar)."
 kick   = "hermetic task request seeded into dm-sup's inbox (fixture/kick-supervisor.md) — says NOTHING about ding/MCP"
-ding_mode = "CRUX: a --ding claude gets no MCP system-prompt. The persona carries an explicit ding-mode bus-participant blurb (no MCP tools; inbound = [DING] pokes; ALL bus ops via the st CLI; CLI boot ritual). The eval reveals whether that blurb is sufficient."
+ding_mode = "CRUX: a --ding claude gets no MCP system-prompt. `st launch --ding` auto-installs the bus contract as DING-BUS.md (#61) — an @DING-BUS.md import in CLAUDE.md (no MCP tools; inbound = [DING] pokes; ALL bus ops via the st CLI; CLI boot ritual). The eval reveals whether that SHIPPED contract is sufficient; the persona no longer hand-carries it."
 
 [launch]
-capability   = "st launch claude --ding (#58): no MCP wiring (.mcp.json skipped), channel off, an `st ding` sidecar per agent for inbox delivery, Claude hooks (SessionStart/PreCompact/StopFailure) still generated."
+capability   = "st launch claude --ding (#58): no MCP wiring (.mcp.json skipped), channel off, an `st ding` sidecar per agent for inbox delivery, Claude hooks (SessionStart/PreCompact/StopFailure) still generated. Unattended delivery is load-bearing on #61 (DING-BUS.md auto-install) + #62 (sidecar survives the launch race) + #63 (sidecar targets the FQN <id>-<session> pty key, not the bare session-name) — all landed 2026-07-05; verified via a 0-poke autonomous loop-close."
 sessions     = "per agent: the claude session (<id>-<stev-prefix>) + a ding sidecar (<id>-ding). BOTH are stev_track_extra'd so teardown is zero-orphan."
 isolation    = "st launch bakes the isolated ST_ROOT into BOTH sessions' env -> agent + ding bind the isolated bus; the live network is untouched."
 known_gap    = "as of #58, .claude/settings.local.json still writes enabledMcpjsonServers:['st'] + enableAllProjectMcpServers even in ding mode (while .mcp.json is skipped) — a dangling MCP ref that should be dropped for a true no-MCP box. Flagged upstream; harmless in the isolated run (nothing to connect) but the NO-MCP grade gate asserts on .mcp.json absence, not settings keys."

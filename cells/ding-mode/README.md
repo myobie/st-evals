@@ -10,10 +10,11 @@ Some environments can't run MCP servers at all (locked-down hosts, some sandboxe
 joins the network the way Codex does: launched with **`st launch claude --ding`** — no MCP wiring, an
 **`st ding` sidecar** delivers inbound messages as `[DING] `-prefixed pokes, and the **`st` CLI** does every
 bus op (send / ls / read / reply / archive / status). A ding-mode Claude gets **no MCP system-prompt**, so
-nothing tells it it's on a bus or how to participate — it must get that from its **persona**. This cell
-launches a **fully no-MCP 2-agent team** and grades whether an explicit ding-mode bus-participant blurb makes
-them genuinely competent. The task (implement `slugify` to an exact spec) is deliberately small so the focus
-is the *coordination experience*, not task difficulty.
+nothing tells it it's on a bus or how to participate — `st launch --ding` **auto-installs** that contract as
+**`DING-BUS.md`** (imported via `@DING-BUS.md` in `CLAUDE.md`), the shipped ding-mode analog of the MCP
+channel instructions. This cell launches a **fully no-MCP 2-agent team** and grades whether that shipped
+contract makes them genuinely competent. The task (implement `slugify` to an exact spec) is deliberately
+small so the focus is the *coordination experience*, not task difficulty.
 
 ## Run it
 

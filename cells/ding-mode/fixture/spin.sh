@@ -20,7 +20,7 @@ stev_arm_teardown "$SB"                              # trap: teardown on crash/i
 [ -d "$SB/widget" ] || { echo "== sandbox absent — materializing =="; "$HERE/setup-sandbox.sh" "$SB"; }
 mkdir -p "$STR/dm-sup/inbox" "$STR/dm-sup/archive"   # so the kick can land before dm-sup launches
 
-echo "== 1/4  compose ding-mode personas (with the no-MCP bus-participant blurb) =="
+echo "== 1/4  compose ding-mode personas (bus contract now auto-installed by --ding as DING-BUS.md, #61) =="
 "$HERE/compose-persona.sh" sup "$SB"
 "$HERE/compose-persona.sh" dev "$SB"
 
