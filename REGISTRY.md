@@ -45,12 +45,13 @@ full-Codex (or GLM, or mixed) team must reach the same graded outcome as the Cla
 
 ---
 
-## Onboarding (per-gate graded; deliverable = a friction list)
+## Onboarding + team-formation (per-gate graded; deliverable = a friction list)
 
 | Cell | Proves | Caps |
 |---|---|---|
 | **bootstrap-network** | zero → a working network: init a fresh `ST_ROOT` → a CoS comes online → boot ritual (status + inbox drain) → CoS **spawns a specialist** → they message end-to-end (incl. an identity-leak kill-test) | st·pty·git |
 | **first-run** | the real "stand this up on your machine" chain: consume the **public personas repo, SHA-pinned** (read-only) → run the first-run interview (scripted synthetic principal) → a committed **private** CoS repo that joins the network. Headline gate: **no-leak** (private data never touches the public checkout, which stays byte-identical at the pin) | st·git·net |
+| **team-standup** | the manager can stand up a **working team**, not just itself: the interviewed CoS **stands up a specialist** (`st launch`) → **delegates** a real unit over the bus → the specialist executes in its **own repo** + reports → the CoS **walks it read-only** + confirms (verifies, doesn't rubber-stamp). Isolation is the hard gate; the whole delegate→execute→report→walk loop is bus-visible. Extends bootstrap→first-run | C·st·pty·git·node |
 
 These deliberately try the *documented* path first at each gate — when it fails, that failure **is** the
 finding — so the friction list reflects what a newcomer following the docs actually hits.
