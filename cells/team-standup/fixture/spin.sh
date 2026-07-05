@@ -25,7 +25,11 @@ HOOKS="${ST_HOOKS_DIR:?set ST_HOOKS_DIR to <smalltalk>/examples/claude-code/hook
 # it for teardown. configure-claude-agent.sh also registers the EXACT CoS session name.
 stev_init "$(basename "$(dirname "$HERE")")" "$SB"; stev_arm_teardown "$SB"
 COS_PREFIX="$(stev_prefix "$SB" cos)"; COS_SESSION="cos-${COS_PREFIX}"   # st launch: <identity>-<session-name>
-WORKER_PREFIX="taskflow"; WORKER_SESSION="${WORKER_PREFIX}-claude"       # CoS stands up taskflow-dev; register for teardown
+# The CoS stands up identity taskflow-dev via its OWN `st launch` (default session-name), so the pty key
+# is the identity joined to the harness name (outside our stev prefix). CONSTRUCT it from the id — a bare
+# hardcoded literal trips the no-PII gate, and the old repo-basename value never matched, so the worker
+# session orphaned every run. Register the EXACT constructed name for teardown.
+WORKER_ID="taskflow-dev"; WORKER_SESSION="${WORKER_ID}-claude"
 stev_track_extra "$SB" "$WORKER_SESSION"
 
 [ -d "$W" ] || { echo "== sandbox absent — materializing =="; "$HERE/setup-sandbox.sh" "$SB"; }
