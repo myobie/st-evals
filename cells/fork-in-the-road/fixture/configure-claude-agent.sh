@@ -41,7 +41,7 @@ PY
 
 # Launch via the real st launch. It inherits ST_ROOT/COORD_ROOT from this process (exported by spin.sh)
 # and (post-#52) bakes ST_ROOT into the generated pty.toml env -> the agent binds the ISOLATED bus.
-( cd "$d" && st launch claude \
+( cd "$d" && st launch claude $(stev_ding_flags) \
     --identity "$id" \
     --session-name "$pfx" \
     --permission-mode "$mode" \
@@ -49,5 +49,7 @@ PY
     --unattended )
 
 stev_track_extra "$SB" "$sess"   # exact resulting session name -> zero-orphan teardown
+# Under --ding, also track the `st ding` sidecar (`<id>-ding`, outside our prefix) or it orphans at teardown.
+stev_ding_on && stev_track_extra "$SB" "$id-ding" || true
 
 echo "launched $id  (pty session=$sess, --permission-mode $mode, isolated bus=$ROOT, persona=$persona, asyncRewake)"

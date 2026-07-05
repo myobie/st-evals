@@ -53,7 +53,7 @@ PY
 # Launch via the real st launch. It inherits ST_ROOT/COORD_ROOT from this process's env (exported by
 # spin.sh) -> the agent binds the ISOLATED coordination bus. --unattended bakes the startup auto-poker;
 # --session-name makes the pty session name collision-proof.
-( cd "$d" && st launch claude \
+( cd "$d" && st launch claude $(stev_ding_flags) \
     --identity "$id" \
     --session-name "$pfx" \
     --permission-mode "$mode" \
@@ -62,5 +62,7 @@ PY
 
 # Register the EXACT resulting session name so teardown is zero-orphan even though it's outside our prefix stem.
 stev_track_extra "$SB" "$sess"
+# Under --ding, also track the `st ding` sidecar (`<id>-ding`, outside our prefix) or it orphans at teardown.
+stev_ding_on && stev_track_extra "$SB" "$id-ding" || true
 
 echo "launched $id  (pty session=$sess, --permission-mode $mode, isolated bus=$ROOT, persona=$persona, asyncRewake)"

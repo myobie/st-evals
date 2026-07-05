@@ -50,7 +50,7 @@ PY
 # Launch via the real st launch. Inherits ST_ROOT/COORD_ROOT from run.sh → binds THIS leg's isolated
 # bus. bypassPermissions + --unattended keep the probe frictionless so the ONLY thing under test is
 # whether the SessionStart hook fires (not permission/trust gates).
-( cd "$d" && st launch claude "${hooks_flag[@]}" \
+( cd "$d" && st launch claude $(stev_ding_flags) "${hooks_flag[@]}" \
     --identity "$id" \
     --session-name "$sname" \
     --permission-mode bypassPermissions \
@@ -58,5 +58,9 @@ PY
     --unattended )
 
 stev_track_extra "$SB" "$sess"        # exact resulting session name → zero-orphan teardown
+# Under --ding, also track the `st ding` sidecar (`<id>-ding`, outside our prefix) or it orphans at teardown.
+# The ding toggle is applied identically on BOTH legs, so the SessionStart hook stays the only on/off
+# variable — and under --ding this leg proves the hook fires with NO MCP: the MCP-hostile-host case.
+stev_ding_on && stev_track_extra "$SB" "$id-ding" || true
 
 echo "launched $id  (leg=$leg, hooks=$hlabel; pty session=$sess, isolated bus=$ROOT)"
