@@ -5,6 +5,7 @@
 # P5 test). Posture: CoS = bypassPermissions (spawn-capable; it shells `st launch` + `pty up`).
 #   ./configure-claude-agent.sh [SANDBOX]
 set -euo pipefail
+STEV_HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; . "$STEV_HERE/../../../bin/lib-harness.sh"
 SB="${1:-${EVAL_SANDBOX:-./.sandbox}/team-standup}"
 STR="$SB/st-root"
 HOOKS="${ST_HOOKS_DIR:?set ST_HOOKS_DIR to <smalltalk>/examples/claude-code/hooks}"
@@ -12,7 +13,8 @@ id="cos"; d="$SB/cos"; mode="bypassPermissions"
 # The pty session namespace is GLOBAL (unlike the coord bus, which we isolate via ST_ROOT). If you already
 # run a chief-of-staff pty session (prefix `cos`), give this eval CoS a DISTINCT pty PREFIX so `pty up`
 # can't clobber it. The coord identity stays `cos` (on the isolated sandbox bus); only the pty prefix differs.
-PTY_PREFIX="ts-cos"
+stev_init "$(basename "$(dirname "$STEV_HERE")")" "$SB"
+PTY_PREFIX="$(stev_prefix "$SB" "$id")"   # collision-proof: stev-team-standup-<runid>-cos (was bare ts-cos)
 sid="$(uuidgen | tr 'A-Z' 'a-z')"
 
 # Pre-trust the CoS dir for Claude Code (skip the folder-trust gate on launch).

@@ -5,6 +5,7 @@
 # Uses the global ~/.codex/config.toml coord MCP registration.
 #   ./configure-codex-agent.sh [SANDBOX]
 set -euo pipefail
+STEV_HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; . "$STEV_HERE/../../../bin/lib-harness.sh"
 SB="${1:-${EVAL_SANDBOX:-./.sandbox}/license-mixed}"
 id="mix-worker"; d="$SB/worker"
 ROOT="${ST_ROOT:-${XDG_STATE_HOME:-$HOME/.local/state}/smalltalk}"
@@ -12,8 +13,9 @@ ROOT="${ST_ROOT:-${XDG_STATE_HOME:-$HOME/.local/state}/smalltalk}"
 # folder (it exited code 1 twice in the license-mit Mixed run before the dir existed).
 mkdir -p "$ROOT/$id/inbox" "$ROOT/$id/archive"; printf 'available\n' > "$ROOT/$id/status"
 
+stev_init "$(basename "$(dirname "$STEV_HERE")")" "$SB"; pfx="$(stev_prefix "$SB" "$id")"
 cat > "$d/pty.toml" <<TOML
-prefix = "$id"
+prefix = "$pfx"
 
 [sessions.codex]
 command = "codex --dangerously-bypass-approvals-and-sandbox"
@@ -24,7 +26,7 @@ COORD_IDENTITY = "$id"
 COORD_ROOT = "$ROOT"
 
 [sessions.ding]
-command = "coord ding $id-codex --identity $id"
+command = "coord ding $pfx-codex --identity $id"
 tags = { role = "ding" }
 
 [sessions.ding.env]

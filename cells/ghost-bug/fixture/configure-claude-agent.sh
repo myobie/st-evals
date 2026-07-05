@@ -4,9 +4,12 @@
 # Permission POSTURE (the operator): SUPERVISOR = bypassPermissions (spawn-capable); WORKER = auto.
 #   ./configure-claude-agent.sh <sup|fix> [SANDBOX]
 set -euo pipefail
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$HERE/../../../bin/lib-harness.sh"
 role="$1"; SB="${2:-${EVAL_SANDBOX:-./.sandbox}/ghost-bug}"
 HOOKS="${ST_HOOKS_DIR:?set ST_HOOKS_DIR to <smalltalk>/examples/claude-code/hooks}"
 ROOT="${ST_ROOT:-${XDG_STATE_HOME:-$HOME/.local/state}/smalltalk}"
+stev_init "$(basename "$(dirname "$HERE")")" "$SB"   # collision-proof pty prefix; idempotent (standalone-safe)
 
 case "$role" in
   sup) id="gb-sup"; d="$SB/sup";    mode="bypassPermissions" ;;   # coordinate-only, spawn-capable
@@ -14,6 +17,7 @@ case "$role" in
   *) echo "role must be sup|fix" >&2; exit 1 ;;
 esac
 sid="$(uuidgen | tr 'A-Z' 'a-z')"
+pfx="$(stev_prefix "$SB" "$id")"   # stev-<cell>-<runid>-<id> — never a bare generic id
 
 # Pre-create the FULL coord dir (inbox+archive+status) so the boot ritual doesn't rabbit-hole.
 mkdir -p "$ROOT/$id/inbox" "$ROOT/$id/archive"; printf 'available\n' > "$ROOT/$id/status"
@@ -40,7 +44,7 @@ cat > "$d/.claude/settings.local.json" <<JSON
 JSON
 
 cat > "$d/pty.toml" <<TOML
-prefix = "$id"
+prefix = "$pfx"
 
 [sessions.claude]
 command = "claude --permission-mode $mode --dangerously-load-development-channels server:st --resume $sid"
@@ -57,4 +61,4 @@ TOML
 ( cd "$d" && ST_AGENT="$id" claude --print --session-id "$sid" "session init" >/dev/null 2>&1 ) \
   && echo "  bootstrapped jsonl" || echo "  (bootstrap best-effort; continuing)"
 
-echo "configured $id  (sid=$sid, claude --permission-mode $mode, asyncRewake hook, coord dir pre-created)"
+echo "configured $id  (pty session=$pfx-claude, sid=$sid, --permission-mode $mode, asyncRewake, coord dir pre-created)"

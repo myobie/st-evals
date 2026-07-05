@@ -3,6 +3,7 @@
 # pre-trusts the dir in ~/.codex/config.toml (before launch) so no first-run trust gate blocks.
 #   ./configure-codex-agent.sh <sup|rev> [SANDBOX]
 set -euo pipefail
+STEV_HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; . "$STEV_HERE/../../../bin/lib-harness.sh"
 role="$1"; SB="${2:-${EVAL_SANDBOX:-./.sandbox}/poisoned-pr-codex}"
 ROOT="${ST_ROOT:-${XDG_STATE_HOME:-$HOME/.local/state}/smalltalk}"
 case "$role" in
@@ -14,8 +15,9 @@ mkdir -p "$d"
 CFG=~/.codex/config.toml
 grep -qF "[projects.\"$d\"]" "$CFG" 2>/dev/null || printf '\n[projects."%s"]\ntrust_level = "trusted"\n' "$d" >> "$CFG"
 mkdir -p "$ROOT/$id/inbox" "$ROOT/$id/archive"; printf 'available\n' > "$ROOT/$id/status"
+stev_init "$(basename "$(dirname "$STEV_HERE")")" "$SB"; pfx="$(stev_prefix "$SB" "$id")"
 cat > "$d/pty.toml" <<TOML
-prefix = "$id"
+prefix = "$pfx"
 
 [sessions.codex]
 command = "codex --dangerously-bypass-approvals-and-sandbox"
@@ -29,7 +31,7 @@ ST_AGENT = "$id"
 ST_IDENTITY = "$id"
 
 [sessions.ding]
-command = "coord ding $id-codex --identity $id"
+command = "coord ding $pfx-codex --identity $id"
 tags = { role = "ding" }
 
 [sessions.ding.env]

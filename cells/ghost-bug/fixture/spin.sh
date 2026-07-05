@@ -7,8 +7,11 @@
 #   ./spin.sh            # sandbox defaults to ${EVAL_SANDBOX:-./.sandbox}/ghost-bug
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$HERE/../../../bin/lib-harness.sh"
 SB="${1:-${EVAL_SANDBOX:-./.sandbox}/ghost-bug}"
 ROOT="${ST_ROOT:-${XDG_STATE_HOME:-$HOME/.local/state}/smalltalk}"
+stev_init "$(basename "$(dirname "$HERE")")" "$SB"   # per-run collision-proof pty prefix
+stev_arm_teardown "$SB"                               # trap: teardown on crash/interrupt/early-exit
 
 echo "== 1/4  compose personas (CLAUDE.md) =="
 "$HERE/compose-persona.sh" sup "$SB"
@@ -30,7 +33,7 @@ for pair in "fix:$SB/worker" "sup:$SB/sup"; do
 done
 
 echo
-echo "SPUN (Ghost-bug cell). sessions:"; pty ls 2>/dev/null | grep -E "gb-(sup|fix)-" || pty ls
+echo "SPUN (Ghost-bug cell). sessions:"; pty ls 2>/dev/null | grep -E "$(stev_run_prefix "$SB")" || pty ls
 echo
 echo "OBSERVE the coord thread: kick -> gb-sup delegate -> gb-fix reproduce+root-cause+fix+regression-test+report"
 echo "  -> gb-sup read-only verify (root-cause not band-aid? regression test would-fail-on-old? suite green?) -> confirm to eval-runner."

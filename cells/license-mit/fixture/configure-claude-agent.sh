@@ -3,6 +3,7 @@
 # pty.toml (with HB-3 COORD_IDENTITY env) + bootstrap session jsonl. Ephemeral tags.
 #   ./configure-claude-agent.sh [SANDBOX]
 set -euo pipefail
+STEV_HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; . "$STEV_HERE/../../../bin/lib-harness.sh"
 SB="${1:-${EVAL_SANDBOX:-./.sandbox}/license-mixed}"
 id="mix-sup"; d="$SB/sup"
 HOOKS="${ST_HOOKS_DIR:?set ST_HOOKS_DIR to <smalltalk>/examples/claude-code/hooks}"
@@ -35,8 +36,9 @@ cat > "$d/.claude/settings.local.json" <<JSON
 }
 JSON
 
+stev_init "$(basename "$(dirname "$STEV_HERE")")" "$SB"; pfx="$(stev_prefix "$SB" "$id")"
 cat > "$d/pty.toml" <<TOML
-prefix = "$id"
+prefix = "$pfx"
 
 [sessions.claude]
 command = "claude --permission-mode auto --dangerously-load-development-channels server:st --resume $sid"

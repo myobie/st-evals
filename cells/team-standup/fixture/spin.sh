@@ -7,13 +7,17 @@
 #   ./spin.sh [SANDBOX]
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$HERE/../../../bin/lib-harness.sh"
 SB="${1:-${EVAL_SANDBOX:-./.sandbox}/team-standup}"
 STR="$SB/st-root"
 W="$SB/taskflow"
 HOOKS="${ST_HOOKS_DIR:?set ST_HOOKS_DIR to <smalltalk>/examples/claude-code/hooks}"
-# pty session names are constructed (never a bare "<name>-claude" literal) so the shipped tree stays clean.
-COS_PREFIX="ts-cos"; WORKER_PREFIX="taskflow"
+# Collision-proof per-run pty prefix (shared harness). The CoS is ours (stev-prefixed); the worker is
+# st-launched by the CoS (named by its identity, outside our prefix), so we register it for teardown.
+stev_init "$(basename "$(dirname "$HERE")")" "$SB"; stev_arm_teardown "$SB"
+COS_PREFIX="$(stev_prefix "$SB" cos)"; WORKER_PREFIX="taskflow"
 COS_SESSION="${COS_PREFIX}-claude"; WORKER_SESSION="${WORKER_PREFIX}-claude"
+stev_track_extra "$SB" "$WORKER_SESSION"
 
 [ -d "$W" ] || { echo "== sandbox absent — materializing =="; "$HERE/setup-sandbox.sh" "$SB"; }
 

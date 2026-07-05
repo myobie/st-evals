@@ -15,7 +15,7 @@ ROOT="$(cd "$HERE/.." && pwd)"
 
 PERSONAS_URL="${PERSONAS_URL:-https://github.com/myobie/personas}"
 # The public contract, pinned. Bump deliberately; reproducibility = this SHA.
-PERSONAS_PIN="${PERSONAS_PIN:-f12458a3a0139ab31bcad7c8b3a9f5750f873a97}"
+PERSONAS_PIN="${PERSONAS_PIN:-0b9bd2090192fa53355d1ac9e34d49201051c45c}"
 DEST="${PERSONAS_DIR:-$ROOT/.personas}"
 
 if [ ! -d "$DEST/.git" ]; then

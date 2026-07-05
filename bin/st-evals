@@ -8,6 +8,7 @@
 #   st-evals readiness        # first-boot smoke: bus works, agents spawn, msgs round-trip
 #   st-evals list             # the cell catalogue (type · ship/flag · caps)
 #   st-evals run <cell>       # run one cell (ensures the pinned personas first)
+#   st-evals teardown <SB>    # pty kill+rm every session a run left behind + neuter pty.toml
 #
 # Env a cell may need (documented per cell): ST_ROOT (a scratch network root),
 # ST_HOOKS_DIR (<smalltalk>/examples/claude-code/hooks), PERSONAS_DIR (auto via
@@ -24,6 +25,11 @@ cmd="${1:-help}"; shift || true
 case "$cmd" in
   preflight) exec "$HERE/preflight.sh" "$@" ;;
   readiness) exec "$HERE/readiness.sh" "$@" ;;
+
+  teardown)
+    sb="${1:-}"; [ -n "$sb" ] || { echo "usage: st-evals teardown <sandbox-dir>" >&2; exit 2; }
+    # shellcheck source=/dev/null
+    . "$HERE/lib-harness.sh"; stev_teardown "$sb" ;;
 
   list)
     printf '%-24s %-11s %-5s %s\n' CELL TYPE SHIP CAPS

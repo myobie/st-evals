@@ -5,6 +5,7 @@
 # requires `ollama serve` up (:11434). asyncRewake works (Claude harness). Ephemeral tags.
 #   ./configure-glm-agent.sh <sup|worker> <ID> [SANDBOX]
 set -euo pipefail
+STEV_HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; . "$STEV_HERE/../../../bin/lib-harness.sh"
 role="$1"; id="$2"; SB="${3:-${EVAL_SANDBOX:-./.sandbox}/license-glm}"
 HOOKS="${ST_HOOKS_DIR:?set ST_HOOKS_DIR to <smalltalk>/examples/claude-code/hooks}"
 ROOT="${ST_ROOT:-${XDG_STATE_HOME:-$HOME/.local/state}/smalltalk}"
@@ -40,8 +41,9 @@ cat > "$d/.claude/settings.local.json" <<JSON
 JSON
 
 # pty.toml — the GLM env contract is the ONLY delta from a normal Claude cell.
+stev_init "$(basename "$(dirname "$STEV_HERE")")" "$SB"; pfx="$(stev_prefix "$SB" "$id")"
 cat > "$d/pty.toml" <<TOML
-prefix = "$id"
+prefix = "$pfx"
 
 [sessions.claude]
 command = "claude --permission-mode $perm --dangerously-load-development-channels server:st --model glm-5.2:cloud --resume $sid"

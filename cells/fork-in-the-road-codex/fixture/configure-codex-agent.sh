@@ -7,6 +7,7 @@
 # is the global ~/.codex/config.toml registration (no per-agent .mcp.json).
 #   ./configure-codex-agent.sh <sup|a|b|c> [SANDBOX]
 set -euo pipefail
+STEV_HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; . "$STEV_HERE/../../../bin/lib-harness.sh"
 role="$1"; SB="${2:-${EVAL_SANDBOX:-./.sandbox}/fork-in-the-road-codex}"
 ROOT="${ST_ROOT:-${XDG_STATE_HOME:-$HOME/.local/state}/smalltalk}"
 
@@ -34,8 +35,9 @@ if git -C "$d" rev-parse --git-dir >/dev/null 2>&1; then
   git -C "$d" config user.email "$id@eval.local"
 fi
 
+stev_init "$(basename "$(dirname "$STEV_HERE")")" "$SB"; pfx="$(stev_prefix "$SB" "$id")"
 cat > "$d/pty.toml" <<TOML
-prefix = "$id"
+prefix = "$pfx"
 
 [sessions.codex]
 command = "codex --dangerously-bypass-approvals-and-sandbox"
@@ -50,7 +52,7 @@ ST_IDENTITY = "$id"
 
 # ding = Codex's wake path (no asyncRewake). Watches <id>'s inbox and pokes the <id>-codex session.
 [sessions.ding]
-command = "coord ding $id-codex --identity $id"
+command = "coord ding $pfx-codex --identity $id"
 tags = { role = "ding" }
 
 [sessions.ding.env]

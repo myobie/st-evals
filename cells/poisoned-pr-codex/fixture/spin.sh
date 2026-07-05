@@ -5,7 +5,9 @@
 #   ./spin.sh            # sandbox defaults to ${EVAL_SANDBOX:-./.sandbox}/poisoned-pr-codex
 set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$HERE/../../../bin/lib-harness.sh"
 SB="${1:-${EVAL_SANDBOX:-./.sandbox}/poisoned-pr-codex}"
+stev_init "$(basename "$(dirname "$HERE")")" "$SB"; stev_arm_teardown "$SB"
 ROOT="${ST_ROOT:-${XDG_STATE_HOME:-$HOME/.local/state}/smalltalk}"
 echo "== 1/3  wire codex + ding for both =="
 "$HERE/configure-codex-agent.sh" sup "$SB"
