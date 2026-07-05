@@ -115,6 +115,11 @@ stev_teardown() {
   find "$sb" -name pty.toml -type f 2>/dev/null | while read -r t; do
     mv "$t" "$t.done" 2>/dev/null || true
   done
+  # A just-killed session lingers briefly as an `exited` record in `pty ls`; sweep those so teardown
+  # leaves an instantly-clean list. `pty gc` only removes EXITED sessions — running agents (live or
+  # other eval runs) are untouched — and our sessions are tags=role=agent (not permanent), so gc
+  # removes rather than resurrects (pty.toml already neutered above as belt-and-suspenders).
+  pty gc >/dev/null 2>&1 || true
   echo "stev: torn down run '$(stev_cell "$sb")/$(stev_runid "$sb")' (prefix ${stem}*)" >&2
 }
 

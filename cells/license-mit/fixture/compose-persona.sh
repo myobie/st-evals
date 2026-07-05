@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 # Compose an eval agent's persona = task-lane + coord boot ritual + role persona + BASE
-# (dev-practices + known-harness-bugs), per FRAMEWORK.md. Writes CLAUDE.md (claude) or
-# AGENTS.md (codex) into the agent's dir.
-#   ./compose-persona.sh <sup|worker> <claude|codex> [SANDBOX]
+# (dev-practices + known-harness-bugs), per FRAMEWORK.md. Writes a STANDALONE persona file
+# ($SB/personas-local/<id>.md) that spin.sh hands to `st launch --persona` — st launch installs it
+# as PERSONA.md in the agent's cwd and adds `@PERSONA.md` to CLAUDE.md (claude) or AGENTS.md (codex).
+# Persona content is family-agnostic; the family arg is retained for signature compat.
+#   ./compose-persona.sh <sup|worker> <claude|codex|glm> [SANDBOX] [REQUESTER]
 set -euo pipefail
 role="$1"; family="$2"; SB="${3:-${EVAL_SANDBOX:-./.sandbox}/license-mixed}"
 # Requester = who sent the kick + who the supervisor confirms back to. Defaults to the harness
@@ -21,11 +23,11 @@ case "$role" in
   *) echo "role must be sup|worker" >&2; exit 1 ;;
 esac
 case "$family" in
-  claude) out="$dir/CLAUDE.md" ;;
-  codex)  out="$dir/AGENTS.md" ;;
-  *) echo "family must be claude|codex" >&2; exit 1 ;;
+  claude|codex|glm) : ;;   # content is family-agnostic; `st launch --persona` installs it per family
+  *) echo "family must be claude|codex|glm" >&2; exit 1 ;;
 esac
-mkdir -p "$dir"
+mkdir -p "$SB/personas-local" "$dir"
+out="$SB/personas-local/$id.md"   # standalone persona fed to `st launch --persona`
 
 # ── the task-lane addendum (authoritative; leads the file) ──
 if [ "$role" = "sup" ]; then
@@ -69,11 +71,14 @@ You are \`$id\` on smalltalk/coord. You own exactly one repo: the \`widget\` lib
 LANE
 fi
 
-# ── coord boot ritual ──
+# ── coord boot ritual (HB-3-safe: identity from $ST_AGENT, never $COORD_IDENTITY) ──
 cat >> "$out" <<'BOOT'
 ---
 ## Coord boot ritual (do this first, every fresh start)
-1. Set your status available: shell out `coord status <your-identity> --set available` (use $COORD_IDENTITY).
+1. Set your status available: shell out `coord status "$ST_AGENT" --set available`.
+   Use `$ST_AGENT` — it is the authoritative identity here. Do NOT interpolate `$COORD_IDENTITY` for your
+   identity: when a parent stands you up via `st launch`, its COORD_IDENTITY can leak into your env (a known
+   launch quirk); `$ST_AGENT` is set correctly to YOU, and coord's own tools already resolve ST_AGENT first.
 2. Drain your inbox: list messages, read each, reply if warranted, archive it. Don't leave inbox items.
 3. Then act on what you found (the supervisor: the seeded task; the worker: await/handle the delegation).
 Your coord correspondent is your interlocutor — questions/blockers/"done" all go through coord messages,

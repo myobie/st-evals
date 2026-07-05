@@ -61,6 +61,7 @@ node_modules/
 .DS_Store
 AGENTS.md
 CLAUDE.md
+PERSONA.md
 .mcp.json
 .claude-session-id
 .claude/
@@ -68,14 +69,19 @@ pty.toml
 pty.toml.done
 GI
 
-echo "== git init worker repo (frozen base) =="
+echo "== git init worker repo (frozen base) + distinct author =="
 git -C "$W" init -q -b main
 git -C "$W" add -A
 git -C "$W" -c user.name="evals-seed" -c user.email="seed@local" commit -q -m "widget: initial library (proprietary license)"
+# Pin the worker repo's git author to the OWNING agent so isolation attribution is unambiguous on ANY
+# box — otherwise the worker's commit falls back to the operator's GLOBAL git identity (e.g. the human
+# running the eval), which breaks the "only the owner committed" gate. (ghost-bug pins gb-fix the same way.)
+git -C "$W" config user.name  "${WORKER_ID:-mix-worker}"
+git -C "$W" config user.email "${WORKER_ID:-mix-worker}@eval.local"
 BASE="$(git -C "$W" rev-parse --short HEAD)"
 
 echo
 echo "SANDBOX READY: $SB"
 echo "  worker/  (owned by mix-worker; base $BASE; LICENSE = proprietary)"
 echo "  sup/     (mix-sup cwd; coordination only, no product repo)"
-echo "next: compose personas (mix-sup=Claude, mix-worker=Codex), wire agents, seed the kick into mix-sup inbox, spin."
+echo "next: spin.sh — compose personas (Claude-only default), st launch each, seed the kick into mix-sup inbox."

@@ -1,58 +1,53 @@
 #!/usr/bin/env bash
-# Wire the Claude supervisor (mix-sup): coord MCP (channel) + asyncRewake wake hook +
-# pty.toml (with HB-3 COORD_IDENTITY env) + bootstrap session jsonl. Ephemeral tags.
-#   ./configure-claude-agent.sh [SANDBOX]
+# Launch one license-mit Claude eval agent (sup|worker) via the REAL `st launch`. st launch writes
+# .mcp.json (server `st`), .claude/settings.local.json (asyncRewake/PreCompact/StopFailure hooks,
+# enableAllProjectMcpServers, enabledMcpjsonServers:["st"]), the session-id, pty.toml, installs the
+# composed persona (--persona -> PERSONA.md + @PERSONA.md), and starts the pty session. We add the two
+# eval-only things: ISOLATION (spin.sh exports ST_ROOT -> st launch bakes/inherits it -> agent binds the
+# isolated bus) and ZERO-ORPHAN teardown (--session-name "$(stev_prefix)" -> collision-proof pty name;
+# stev_track_extra the EXACT name). Plus deterministic startup hygiene (isolated coord dir + folder pre-trust).
+# Posture mirrors the walked ghost-bug reference: SUPERVISOR = bypassPermissions, WORKER = auto.
+#   ./configure-claude-agent.sh <sup|worker> [SANDBOX]   # ST_ROOT must be exported (spin.sh does this)
 set -euo pipefail
-STEV_HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; . "$STEV_HERE/../../../bin/lib-harness.sh"
-SB="${1:-${EVAL_SANDBOX:-./.sandbox}/license-mixed}"
-id="mix-sup"; d="$SB/sup"
-HOOKS="${ST_HOOKS_DIR:?set ST_HOOKS_DIR to <smalltalk>/examples/claude-code/hooks}"
-ROOT="${ST_ROOT:-${XDG_STATE_HOME:-$HOME/.local/state}/smalltalk}"
-sid="$(uuidgen | tr 'A-Z' 'a-z')"
-# Pre-create the FULL coord dir (inbox+archive+status). coord_msg_send makes only inbox/, and the
-# boot ritual's `coord status --set available` needs archive/ too — otherwise the sup rabbit-holes
-# on boot trying to mkdir its own coord folder (license-mit Mixed run finding).
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+. "$HERE/../../../bin/lib-harness.sh"
+role="$1"; SB="${2:-${EVAL_SANDBOX:-./.sandbox}/license-mixed}"
+ROOT="${ST_ROOT:?spin.sh must export ST_ROOT to the isolated bus root ($SB/st-root) before launching}"
+SUP_ID="${SUP_ID:-mix-sup}"; WORKER_ID="${WORKER_ID:-mix-worker}"
+stev_init "$(basename "$(dirname "$HERE")")" "$SB"   # collision-proof pty prefix; idempotent (standalone-safe)
+
+case "$role" in
+  sup)    id="$SUP_ID";    d="$SB/sup";    mode="bypassPermissions" ;;   # coordinate-only
+  worker) id="$WORKER_ID"; d="$SB/worker"; mode="auto" ;;                # owns the widget repo
+  *) echo "role must be sup|worker" >&2; exit 1 ;;
+esac
+persona="$SB/personas-local/$id.md"
+[ -f "$persona" ] || { echo "missing composed persona $persona — run compose-persona.sh $role claude first" >&2; exit 1; }
+pfx="$(stev_prefix "$SB" "$id")"     # stev-<cell>-<runid>-<id>
+sess="$id-$pfx"                       # st launch names the pty session <identity>-<session-name>
+
+# Pre-create the FULL coord dir on the ISOLATED bus so the boot ritual doesn't rabbit-hole.
 mkdir -p "$ROOT/$id/inbox" "$ROOT/$id/archive"; printf 'available\n' > "$ROOT/$id/status"
-mkdir -p "$d/.claude"
-printf '%s\n' "$sid" > "$d/.claude-session-id"
 
-cat > "$d/.mcp.json" <<JSON
-{
-  "mcpServers": {
-    "coord": { "type": "stdio", "command": "$(command -v coord || echo coord)", "args": ["mcp", "--channel"], "env": {} }
-  }
-}
-JSON
+# Pre-trust the folder (deterministic; --unattended also auto-pokes the startup gates).
+python3 - "$d" <<'PY'
+import json,os,sys
+p=os.path.expanduser("~/.claude.json")
+d=json.load(open(p)) if os.path.exists(p) else {}
+e=d.setdefault("projects",{}).setdefault(sys.argv[1],{})
+e["hasTrustDialogAccepted"]=True; e["hasCompletedProjectOnboarding"]=True
+json.dump(d,open(p,"w"),indent=2)
+PY
 
-cat > "$d/.claude/settings.local.json" <<JSON
-{
-  "\$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "enabledMcpjsonServers": ["coord"],
-  "enableAllProjectMcpServers": true,
-  "hooks": {
-    "SessionStart": [{ "hooks": [{ "type": "command", "command": "$HOOKS/session-start.sh", "async": true, "asyncRewake": true }] }],
-    "StopFailure": [{ "hooks": [{ "type": "command", "command": "$HOOKS/stop-failure.sh" }] }]
-  }
-}
-JSON
+# Launch via the real st launch. It inherits ST_ROOT/COORD_ROOT from this process (exported by spin.sh)
+# and (post-#52) bakes ST_ROOT into the generated pty.toml env -> the agent binds the ISOLATED bus.
+( cd "$d" && st launch claude \
+    --identity "$id" \
+    --session-name "$pfx" \
+    --permission-mode "$mode" \
+    --persona "$persona" \
+    --unattended )
 
-stev_init "$(basename "$(dirname "$STEV_HERE")")" "$SB"; pfx="$(stev_prefix "$SB" "$id")"
-cat > "$d/pty.toml" <<TOML
-prefix = "$pfx"
+stev_track_extra "$SB" "$sess"   # exact resulting session name -> zero-orphan teardown
 
-[sessions.claude]
-command = "claude --permission-mode auto --dangerously-load-development-channels server:st --resume $sid"
-tags = { role = "agent" }
-
-[sessions.claude.env]
-ST_AGENT = "$id"
-COORD_IDENTITY = "$id"
-ST_IDENTITY = "$id"
-ST_ROOT = "$ROOT"
-COORD_ROOT = "$ROOT"
-TOML
-
-( cd "$d" && ST_AGENT="$id" claude --print --session-id "$sid" "session init" >/dev/null 2>&1 ) \
-  && echo "  bootstrapped jsonl" || echo "  (bootstrap best-effort; continuing)"
-
-echo "configured $id  (sid=$sid, claude, asyncRewake hook, ephemeral)"
+echo "launched $id  (pty session=$sess, --permission-mode $mode, isolated bus=$ROOT, persona=$persona, asyncRewake)"
