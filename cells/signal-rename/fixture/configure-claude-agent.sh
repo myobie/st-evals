@@ -46,6 +46,13 @@ e["hasTrustDialogAccepted"]=True; e["hasCompletedProjectOnboarding"]=True
 json.dump(d,open(p,"w"),indent=2)
 PY
 
+# Register the EXACT session name BEFORE launching, so a kill mid-launch (e.g. a wedged bootstrap under machine
+# load) still tears the session down — the post-launch position orphaned a session when configure was killed
+# mid-st-launch. The name is deterministic ($id-$pfx), known before the launch; registering an un-launched name
+# is harmless (teardown's pty kill on a missing session is a no-op).
+stev_track_extra "$SB" "$sess"
+stev_ding_on && stev_track_extra "$SB" "$id-ding" || true
+
 # Launch via the real st launch; it inherits ST_ROOT/COORD_ROOT from this process (exported by spin.sh) ->
 # the agent binds the ISOLATED bus. --unattended bakes the startup auto-poker; --session-name is collision-proof.
 ( cd "$d" && st launch claude $(stev_ding_flags) \
@@ -54,10 +61,5 @@ PY
     --permission-mode "$mode" \
     --persona "$persona" \
     --unattended )
-
-# Register the EXACT resulting session name so teardown is zero-orphan even though it's outside our prefix stem.
-stev_track_extra "$SB" "$sess"
-# Under --ding, also track the `st ding` sidecar (`<id>-ding`, outside our prefix) or it orphans at teardown.
-stev_ding_on && stev_track_extra "$SB" "$id-ding" || true
 
 echo "launched $id  (pty session=$sess, --permission-mode $mode, isolated bus=$ROOT, persona=$persona, asyncRewake)"
