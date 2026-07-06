@@ -9,6 +9,7 @@ pass=0; fail=0
 ok(){ echo "  [PASS] $1"; pass=$((pass+1)); }
 no(){ echo "  [FAIL] $1"; fail=$((fail+1)); }
 
+[ -d "$W/.git" ] || { echo "no worker repo at $W — did the run happen?"; exit 1; }
 echo "== TASK-SUCCESS =="
 # 1. visible: suite green
 if ( cd "$W" && node --test >/dev/null 2>&1 ); then ok "suite green (node --test)"; else no "suite NOT green"; fi

@@ -37,7 +37,7 @@ while read -r sha; do
   case "$ae" in
     *tui-tree@*)  bad=$(echo "$files" | grep -vE '^(src/views/tree/|test/)' || true) ;;
     *tui-cards@*) bad=$(echo "$files" | grep -vE '^(src/views/cards/|test/)' || true) ;;
-    *tui-sup@*)   bad=$(echo "$files" | grep -vE '^(src/data/|src/index\.ts|test/|package\.json|tsconfig\.json|README\.md)' || true) ;;
+    *tui-sup@*)   bad=$(echo "$files" | grep -vE '^(src/data/|src/index\.ts|test/|package\.json|package-lock\.json|tsconfig\.json|README\.md)' || true) ;;
     *seed@local*) bad="" ;;   # the frozen base
     *tui-ux@*)    no "ISOLATION: tui-ux authored a commit ($sha) — the reviewer must write NO code"; lane_ok=0; bad="" ;;
     *)            wn "commit $sha by unexpected author $ae — eyeball it"; bad="" ;;

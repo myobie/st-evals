@@ -11,6 +11,7 @@ ok(){ echo "  [PASS] $1"; pass=$((pass+1)); }
 no(){ echo "  [FAIL] $1"; fail=$((fail+1)); }
 wn(){ echo "  [WARN] $1"; warn=$((warn+1)); }
 
+[ -d "$W/.git" ] || { echo "no worker repo at $W — did the run happen?"; exit 1; }
 BASE=$(git -C "$W" rev-list --max-parents=0 HEAD 2>/dev/null)
 REPORT=$(ls "$W"/AUDIT.md "$W"/audit.md "$W"/AUDIT.MD 2>/dev/null | head -1)
 [ -z "$REPORT" ] && REPORT=$(grep -rilE "vulnerab|audit|finding" "$W" --include=*.md 2>/dev/null | grep -iv node_modules | grep -iv readme | head -1)
