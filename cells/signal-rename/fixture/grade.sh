@@ -45,7 +45,7 @@ while read -r sha; do
     *sig-hub@*)   bad=$(echo "$files" | grep -vE '^(signal-hub|beacon-hub)/'   || true) ;;
     *sig-sup@*)   bad=$(echo "$files" | grep -vE '^(config/|package\.json|README\.md|\.gitignore)' || true) ;;
     *seed@local*) bad="" ;;   # the frozen seed commit
-    *)            wn "commit $sha by unexpected author $ae — eyeball it"; bad="" ;;
+    *)            no "ISOLATION: commit $sha by UNEXPECTED author $ae (not a pinned lane owner) — hard fail, investigate"; lane_ok=0; bad="" ;;
   esac
   if [ -n "$bad" ]; then no "ISOLATION: ${ae%%@*} changed out-of-lane files in $sha: $(echo "$bad" | tr '\n' ' ')"; lane_ok=0; fi
 done < <(git -C "$W" rev-list "$BASE"..HEAD 2>/dev/null)
@@ -53,7 +53,7 @@ done < <(git -C "$W" rev-list "$BASE"..HEAD 2>/dev/null)
 
 echo "== SUITE GREEN (hard gate — node --test per package) =="
 mapfile -t PKGS < <( cd "$W" && find . -maxdepth 2 -name package.json -not -path './package.json' -not -path '*/node_modules/*' 2>/dev/null | sed 's#/package.json##; s#^\./##' | sort )
-[ "${#PKGS[@]}" -ge 3 ] || wn "found ${#PKGS[@]} packages (expected 3) — rename may have moved/removed a package dir"
+[ "${#PKGS[@]}" -ge 3 ] || no "found ${#PKGS[@]} packages (expected >=3: base + relay + hub) — a package was removed/merged"
 for p in "${PKGS[@]}"; do
   ( cd "$W/$p" && node --test >/dev/null 2>&1 ) && ok "node --test GREEN: $p" || no "node --test RED: $p"
 done
