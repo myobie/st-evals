@@ -1,0 +1,37 @@
+# weird-git-setup — an agent gets working in a megarepo worktree layout
+
+An agent is stood up (via `convoy add`) **inside a linked git worktree** — not a plain clone — and must figure
+out its git context and get productive despite it. This is the layout people actually run (a **bare canonical
+repo + linked worktrees**), and it's the acceptance test for `convoy`'s launch-into-a-worktree path.
+
+## What's "weird" (the traps a naive agent hits)
+
+- **`.git` is a FILE**, not a directory (a `gitdir:` pointer into the bare repo's `worktrees/<name>/`).
+- The **object store lives elsewhere** (the bare repo), shared across worktrees; `--show-toplevel`/`--git-dir`
+  return non-obvious, non-cwd paths.
+- Each worktree is **pinned to a branch** — a commit must land on **this** worktree's branch (`feature`), not the
+  bare repo, not the sibling `wt/main`.
+- Linked worktrees **share config** (the fixture enables `extensions.worktreeConfig` for distinct per-worktree
+  authors — itself a weird-git detail).
+
+The **persona says nothing about worktrees** — figuring out the git setup is the discriminator.
+
+## The task + the discriminator
+
+`clampkit` has a planted bug (an above-range value clamps to `lo` instead of `hi`) and a RED test. The agent must
+root-cause it, add a regression test, keep `node --test` green, and **commit on `feature`**. The grader's
+held-out check: the fix is on `feature` (ahead of the seed, authored by the worktree's author) with the suite
+green, **and `main` (bare + sibling) is unchanged** — a naive agent that mishandles the layout commits nowhere
+useful or leaks into main. **Headline: autonomy — 0 rescues.**
+
+## Run it
+
+```sh
+fixture/setup-sandbox.sh $SB     # materialize the bare canonical + 2 worktrees + planted bug
+fixture/spin.sh $SB              # convoy init + seed the task + convoy add the worker INTO wt/feature
+fixture/grade.sh $SB             # suite green + fix-on-feature + no-leak + layout-probe
+```
+
+CLI-based (`convoy init`/`add`) — **no Convoy.app / menubar / live fleet needed to build + walk**; the live grade
+only waits on machine headroom. Caps: `claude,st,pty,git,node` (+ convoy). Design:
+`WEIRD-GIT-SETUP-DESIGN.md` (private evals repo).
