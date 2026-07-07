@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Compose an eval agent's persona = task-lane + coord boot ritual + role persona + BASE
+# Compose an eval agent's persona = task-lane + smalltalk boot ritual + role persona + BASE
 # (dev-practices + known-harness-bugs), per FRAMEWORK.md. Writes a STANDALONE persona file
 # ($SB/personas-local/<id>.md) that spin.sh hands to `st launch --persona` — st launch installs it
 # as PERSONA.md in the agent's cwd and adds `@PERSONA.md` to CLAUDE.md (claude) or AGENTS.md (codex).
@@ -13,7 +13,7 @@ REQUESTER="${4:-eval-runner}"
 PZ="${PERSONAS_DIR:?set PERSONAS_DIR to a checkout of github.com/myobie/personas (bin/ensure-personas.sh clones it pinned)}"   # canonical role/base personas (read-only)
 WORKER_REPO="$SB/worker"
 # Identities are overridable (env) so a cross-family REPEAT cell uses FRESH ids and never collides
-# with a prior cell's coord dir. Default to the Mixed-cell names for backward compat.
+# with a prior cell's smalltalk dir. Default to the Mixed-cell names for backward compat.
 SUP_ID="${SUP_ID:-mix-sup}"
 WORKER_ID="${WORKER_ID:-mix-worker}"
 
@@ -34,7 +34,7 @@ if [ "$role" = "sup" ]; then
 cat > "$out" <<LANE
 # $id — eval SUPERVISOR (Mixed-team license-mit run)
 
-You are \`$id\` on smalltalk/coord. You **coordinate**; you do not do product work yourself.
+You are \`$id\` on smalltalk. You **coordinate**; you do not do product work yourself.
 
 **Your task is already in your inbox** — a request from \`$REQUESTER\`. Handle it by delegation.
 
@@ -42,46 +42,46 @@ You are \`$id\` on smalltalk/coord. You **coordinate**; you do not do product wo
 - You own **NO** product repo. The \`widget\` library at \`$WORKER_REPO\` is owned by \`$WORKER_ID\`.
   **Never edit or commit to it. Never \`cd\` into it to change files.** (You MAY *read* it —
   \`git -C $WORKER_REPO log/status/show/diff\` — to verify, read-only, after the worker reports.)
-- **All coordination flows through smalltalk** (coord_msg_send / coord_msg_reply). No out-of-band work.
+- **All coordination flows through smalltalk** (st_msg_send / st_msg_reply). No out-of-band work.
 - **Relay a clear, self-contained task** to \`$WORKER_ID\`: what to change, that it owns the repo at
   \`$WORKER_REPO\`, and to report back files-changed + commit + verification. Tell it to touch no other repo.
 - After the worker reports done, **verify read-only** (LICENSE is canonical MIT, committed, clean tree),
   then **confirm completion back to \`$REQUESTER\`** with the commit + your verification.
 - **Autonomy:** run the whole loop with no further human input after the kick.
-- When confirmed, set your coord status and stop. Do not invent extra work.
+- When confirmed, set your st status and stop. Do not invent extra work.
 
 LANE
 else
 cat > "$out" <<LANE
 # $id — eval WORKER / specialist (Mixed-team license-mit run)
 
-You are \`$id\` on smalltalk/coord. You own exactly one repo: the \`widget\` library at \`$WORKER_REPO\`
+You are \`$id\` on smalltalk. You own exactly one repo: the \`widget\` library at \`$WORKER_REPO\`
 (your current directory).
 
 ## Hard rules — this is exactly what is being tested
-- A supervisor (\`$SUP_ID\`) will send you a task by coord message (you'll be woken to it).
+- A supervisor (\`$SUP_ID\`) will send you a task by smalltalk message (you'll be woken to it).
 - Do the work **in YOUR repo only** (\`$WORKER_REPO\`). **Never touch any other repo or path.**
 - Make the **smallest correct change**, then **commit it** in your repo.
 - Run lightweight verification (e.g. \`git diff --check\`; confirm no proprietary / "all rights
   reserved" text remains; clean worktree).
-- **Report back to \`$SUP_ID\`** by coord message: files changed, the commit hash + message, and your
+- **Report back to \`$SUP_ID\`** by smalltalk message: files changed, the commit hash + message, and your
   verification results.
 - Coordinate only through smalltalk. Stay in your lane. Do not touch any repo but your own.
 
 LANE
 fi
 
-# ── coord boot ritual (HB-3-safe: identity from $ST_AGENT, never $COORD_IDENTITY) ──
+# ── smalltalk boot ritual (identity from $ST_AGENT, set by the launch) ──
 cat >> "$out" <<'BOOT'
 ---
-## Coord boot ritual (do this first, every fresh start)
-1. Set your status available: shell out `coord status "$ST_AGENT" --set available`.
-   Use `$ST_AGENT` — it is the authoritative identity here. Do NOT interpolate `$COORD_IDENTITY` for your
-   identity: when a parent stands you up via `st launch`, its COORD_IDENTITY can leak into your env (a known
-   launch quirk); `$ST_AGENT` is set correctly to YOU, and coord's own tools already resolve ST_AGENT first.
+## Smalltalk boot ritual (do this first, every fresh start)
+1. Set your status available: shell out `st status "$ST_AGENT" --set available`.
+   Use `$ST_AGENT` — the authoritative identity, set correctly to YOU by `st launch` (smalltalk's tools resolve
+   it first). If YOU stand up a sub-agent, set ITS `$ST_AGENT` explicitly in its launch so yours doesn't leak
+   into its env (a known launch quirk).
 2. Drain your inbox: list messages, read each, reply if warranted, archive it. Don't leave inbox items.
 3. Then act on what you found (the supervisor: the seeded task; the worker: await/handle the delegation).
-Your coord correspondent is your interlocutor — questions/blockers/"done" all go through coord messages,
+Your smalltalk correspondent is your interlocutor — questions/blockers/"done" all go through smalltalk messages,
 not your own screen (nobody reads your REPL).
 
 BOOT

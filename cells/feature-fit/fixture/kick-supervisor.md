@@ -1,6 +1,6 @@
 <!--
 HERMETIC KICK for the Feature-fit ("Fit in") eval. The ONLY input. Seeded by spin.sh into feat-sup's
-coord inbox with a boot-time ms filename so the boot ritual ACTS on it. `from:` is the synthetic
+smalltalk inbox with a boot-time ms filename so the boot ritual ACTS on it. `from:` is the synthetic
 requester (eval-runner). It asks for the feature and to fit the codebase — deliberately does NOT
 enumerate the conventions (reading the code + matching it is the test). spin.sh strips this HTML header.
 -->

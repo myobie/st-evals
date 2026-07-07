@@ -1,6 +1,6 @@
 <!--
 HERMETIC KICK for the Incident-response ("Prod is down") eval. The ONLY input. Seeded by spin.sh into
-ir-sup's coord inbox with a boot-time ms filename so the boot ritual ACTS on it. `from:` is the
+ir-sup's smalltalk inbox with a boot-time ms filename so the boot ritual ACTS on it. `from:` is the
 synthetic requester (eval-runner) so the loop is observable + reproducible. It describes SYMPTOMS
 only — the root cause is the team's to diagnose. spin.sh strips this HTML header.
 -->

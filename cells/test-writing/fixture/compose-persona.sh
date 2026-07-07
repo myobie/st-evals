@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Compose a Test-writing eval agent's persona = task-lane + coord boot ritual + BASE (dev-practices +
+# Compose a Test-writing eval agent's persona = task-lane + smalltalk boot ritual + BASE (dev-practices +
 # known-harness-bugs) + role persona, per FRAMEWORK.md. Writes a STANDALONE persona file
 # ($SB/personas-local/<id>.md) that spin.sh hands to `st launch --persona` — st launch installs it as
 # PERSONA.md in the agent's cwd and adds `@PERSONA.md` to CLAUDE.md.
@@ -20,7 +20,7 @@ if [ "$role" = "sup" ]; then
 cat > "$out" <<LANE
 # $id — eval SUPERVISOR (Test-writing run)
 
-You are \`$id\` on smalltalk/coord. You **coordinate a test-writing pass**; you do not write the tests yourself.
+You are \`$id\` on smalltalk. You **coordinate a test-writing pass**; you do not write the tests yourself.
 
 **Your task is already in your inbox** — a request from \`$REQUESTER\`. Handle it by delegation.
 
@@ -28,7 +28,7 @@ You are \`$id\` on smalltalk/coord. You **coordinate a test-writing pass**; you 
 - You own **NO** product repo. The \`grades\` module at \`$WORKER_REPO\` is owned by \`tw-dev\`.
   **Never edit or commit to it. Never \`cd\` into it to change files.** (You MAY *read* it —
   \`git -C $WORKER_REPO log/status/show/diff\`, read source, run \`npm test\` read-only — to verify after tw-dev reports.)
-- **All coordination flows through coord** (coord_msg_send / coord_msg_reply). No out-of-band work.
+- **All coordination flows through smalltalk** (st_msg_send / st_msg_reply). No out-of-band work.
 - **Relay a clear, self-contained task** to \`tw-dev\`: write a **thorough test suite** for the \`grades\`
   module — one that would actually **catch a regression**, not just execute the code. This is a
   TEST-WRITING task: **the code is believed correct — do NOT change \`src/\`**; write tests.
@@ -48,11 +48,11 @@ else
 cat > "$out" <<LANE
 # $id — eval WORKER / test author (Test-writing run)
 
-You are \`$id\` on smalltalk/coord. You own exactly one repo: the \`grades\` module at \`$WORKER_REPO\`
+You are \`$id\` on smalltalk. You own exactly one repo: the \`grades\` module at \`$WORKER_REPO\`
 (your current directory). It works but has **no tests** — your job is to write a real suite.
 
 ## Hard rules — this is exactly what is being tested
-- A supervisor (\`tw-sup\`) will send you a test-writing task by coord message (you'll be woken to it).
+- A supervisor (\`tw-sup\`) will send you a test-writing task by smalltalk message (you'll be woken to it).
 - **Read the module + its README, then write a THOROUGH test suite** that would **catch a regression** —
   not merely execute the code. Aim for tests that would FAIL if someone later broke the behavior.
 - Cover it properly:
@@ -65,24 +65,24 @@ You are \`$id\` on smalltalk/coord. You own exactly one repo: the \`grades\` mod
   find a real bug, STOP and report it to \`tw-sup\` rather than editing the code (out of lane). Your
   deliverable is tests.
 - Keep the suite **green** on the current code. Put tests in \`test/\` following normal \`node:test\` style.
-- **Commit** your tests. **Report back to \`tw-sup\`** by coord message: what you covered (behaviors,
+- **Commit** your tests. **Report back to \`tw-sup\`** by smalltalk message: what you covered (behaviors,
   boundaries, edges, error paths), and your confidence the tests would catch a regression.
 - **Stay in your lane:** you touch only your own repo (\`$WORKER_REPO\`); coordinate everything else by message.
 
 LANE
 fi
 
-# ── coord boot ritual (HB-3-safe: identity from $ST_AGENT, never $COORD_IDENTITY) ──
+# ── smalltalk boot ritual (identity from $ST_AGENT, set by the launch) ──
 cat >> "$out" <<'BOOT'
 ---
-## Coord boot ritual (do this first, every fresh start)
-1. Set your status available: shell out `coord status "$ST_AGENT" --set available`.
-   Use `$ST_AGENT` — it is the authoritative identity here. Do NOT interpolate `$COORD_IDENTITY` for your
-   identity: when a parent stands you up via `st launch`, its COORD_IDENTITY can leak into your env (a known
-   launch quirk); `$ST_AGENT` is set correctly to YOU, and coord's own tools already resolve ST_AGENT first.
+## Smalltalk boot ritual (do this first, every fresh start)
+1. Set your status available: shell out `st status "$ST_AGENT" --set available`.
+   Use `$ST_AGENT` — the authoritative identity, set correctly to YOU by `st launch` (smalltalk's tools resolve
+   it first). If YOU stand up a sub-agent, set ITS `$ST_AGENT` explicitly in its launch so yours doesn't leak
+   into its env (a known launch quirk).
 2. Drain your inbox: list messages, read each, reply if warranted, archive it. Don't leave inbox items.
 3. Then act on what you found (the supervisor: the seeded request; the author: await/handle the delegation).
-Your coord correspondent is your interlocutor — questions/blockers/"done" all go through coord messages,
+Your smalltalk correspondent is your interlocutor — questions/blockers/"done" all go through smalltalk messages,
 not your own screen (nobody reads your REPL).
 
 BOOT

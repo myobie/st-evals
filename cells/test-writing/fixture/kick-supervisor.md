@@ -1,5 +1,5 @@
 <!--
-HERMETIC KICK for the Test-writing eval. The ONLY input. Seeded by spin.sh into tw-sup's coord inbox
+HERMETIC KICK for the Test-writing eval. The ONLY input. Seeded by spin.sh into tw-sup's smalltalk inbox
 with a boot-time ms filename so the boot ritual ACTS on it. `from:` is the synthetic requester
 (eval-runner). It asks for a thorough suite that would catch a regression — deliberately does NOT
 mention mutation testing or the specific defects (that's the grader). spin.sh strips this HTML header.

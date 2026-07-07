@@ -1,6 +1,6 @@
 <!--
 HERMETIC KICK for the tui-build cell. This is the ONLY input to the team — no live agent prompts anyone.
-spin.sh strips this HTML header and materializes the rest into tui-sup's inbox as a valid coord filename
+spin.sh strips this HTML header and materializes the rest into tui-sup's inbox as a valid smalltalk filename
 (<13-digit-ms>-<6alnum>.md) with a boot-time ms so the boot ritual ACTS on it. `from: river` is the
 synthetic principal (reproducible, not a live sender).
 -->
@@ -17,7 +17,7 @@ Build it as a small TUI in the repo you own, in **two layouts that share one dat
   1. a **tree** view with a preview pane — agents as a navigable tree; selecting one previews it;
   2. a **cards** view with a preview pane — the same data as cards; selecting one previews it.
 
-It reads the network **read-only** — the agent list from `coord agents --enrich --json` and the message
+It reads the network **read-only** — the agent list from `st agents --enrich --json` and the message
 dir under `$ST_ROOT` — and must **never** write agent state. There are prototype views already (a
 tree+preview and a cards+preview), built on `@myobie/pty/tui` — start from those, don't restart from scratch.
 

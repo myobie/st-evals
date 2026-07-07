@@ -1,6 +1,6 @@
 <!--
 HERMETIC KICK for the signal-rename cell. The ONLY input to the team — no live agent prompts anyone.
-spin.sh strips this HTML header and drops the frontmatter+body into sig-sup's inbox as a valid coord message
+spin.sh strips this HTML header and drops the frontmatter+body into sig-sup's inbox as a valid smalltalk message
 (boot-time ms filename). `from:` is a SYNTHETIC requester (morgan) — reproducible, not a live sender.
 -->
 ---

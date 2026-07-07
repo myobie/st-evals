@@ -1,6 +1,6 @@
 <!--
 HERMETIC KICK for the Restart-continuity (durability) eval. The ONLY input. Seeded by spin.sh into
-rc-sup's coord inbox with a boot-time ms filename so the boot ritual ACTS on it. `from:` is the synthetic
+rc-sup's smalltalk inbox with a boot-time ms filename so the boot ritual ACTS on it. `from:` is the synthetic
 requester (eval-runner) so the loop is observable + reproducible. spin.sh strips this HTML header.
 
 By design this says NOTHING about restarts — the fault injection (a cold restart of the worker mid-batch)

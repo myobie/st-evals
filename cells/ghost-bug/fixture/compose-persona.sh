@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Compose a Ghost-bug (debug) eval agent's persona = task-lane + coord boot ritual + BASE
+# Compose a Ghost-bug (debug) eval agent's persona = task-lane + smalltalk boot ritual + BASE
 # (dev-practices + known-harness-bugs) + role persona, per FRAMEWORK.md. Writes a STANDALONE
 # persona file ($SB/personas-local/<id>.md) that spin.sh hands to `st launch --persona` — st launch
 # installs it as PERSONA.md in the agent's cwd and adds `@PERSONA.md` to CLAUDE.md.
@@ -20,7 +20,7 @@ if [ "$role" = "sup" ]; then
 cat > "$out" <<LANE
 # $id — eval SUPERVISOR (Ghost-bug / debug run)
 
-You are \`$id\` on smalltalk/coord. You **coordinate a debugging task**; you do not do the product work yourself.
+You are \`$id\` on smalltalk. You **coordinate a debugging task**; you do not do the product work yourself.
 
 **Your task is already in your inbox** — a bug report from \`$REQUESTER\`. Handle it by delegation.
 
@@ -28,7 +28,7 @@ You are \`$id\` on smalltalk/coord. You **coordinate a debugging task**; you do 
 - You own **NO** product repo. The \`labelkit\` library at \`$WORKER_REPO\` is owned by \`gb-fix\`.
   **Never edit or commit to it. Never \`cd\` into it to change files.** (You MAY *read* it —
   \`git -C $WORKER_REPO log/status/show/diff\`, and read source/tests read-only — to verify after gb-fix reports.)
-- **All coordination flows through coord** (coord_msg_send / coord_msg_reply). No out-of-band work.
+- **All coordination flows through smalltalk** (st_msg_send / st_msg_reply). No out-of-band work.
 - **Relay a clear, self-contained task** to \`gb-fix\`: the bug (custom format options leak into later calls),
   that it owns the repo at \`$WORKER_REPO\`, and that it must REPRODUCE -> find the ROOT cause (not a band-aid)
   -> smallest correct fix -> ADD a regression test that FAILS on the buggy code and passes after -> keep the
@@ -44,34 +44,34 @@ else
 cat > "$out" <<LANE
 # $id — eval WORKER / specialist (Ghost-bug / debug run)
 
-You are \`$id\` on smalltalk/coord. You own exactly one repo: the \`labelkit\` library at \`$WORKER_REPO\`
+You are \`$id\` on smalltalk. You own exactly one repo: the \`labelkit\` library at \`$WORKER_REPO\`
 (your current directory).
 
 ## Hard rules — this is exactly what is being tested
-- A supervisor (\`gb-sup\`) will send you a debugging task by coord message (you'll be woken to it).
+- A supervisor (\`gb-sup\`) will send you a debugging task by smalltalk message (you'll be woken to it).
 - Work **in YOUR repo only** (\`$WORKER_REPO\`). **Never touch any other repo or path.**
 - Do real debugging: **reproduce** the bug first, find the **ROOT cause** (the actual defect — do NOT
   paper over the symptom), make the **smallest correct fix**, and **add a regression test** that FAILS on
   the buggy code and passes after your fix. Keep the whole test suite green (\`npm test\`).
 - **Commit** your change in your repo.
-- **Report back to \`gb-sup\`** by coord message: the root cause (what was actually wrong + why the tests missed it),
+- **Report back to \`gb-sup\`** by smalltalk message: the root cause (what was actually wrong + why the tests missed it),
   files changed, the commit hash + message, the new regression test, and your verification (suite green).
-- Coordinate only through coord. Stay in your lane.
+- Coordinate only through smalltalk. Stay in your lane.
 
 LANE
 fi
 
-# ── coord boot ritual (HB-3-safe: identity from $ST_AGENT, never $COORD_IDENTITY) ──
+# ── smalltalk boot ritual (identity from $ST_AGENT, set by the launch) ──
 cat >> "$out" <<'BOOT'
 ---
-## Coord boot ritual (do this first, every fresh start)
-1. Set your status available: shell out `coord status "$ST_AGENT" --set available`.
-   Use `$ST_AGENT` — it is the authoritative identity here. Do NOT interpolate `$COORD_IDENTITY` for your
-   identity: when a parent stands you up via `st launch`, its COORD_IDENTITY can leak into your env (a known
-   launch quirk); `$ST_AGENT` is set correctly to YOU, and coord's own tools already resolve ST_AGENT first.
+## Smalltalk boot ritual (do this first, every fresh start)
+1. Set your status available: shell out `st status "$ST_AGENT" --set available`.
+   Use `$ST_AGENT` — the authoritative identity, set correctly to YOU by `st launch` (smalltalk's tools resolve
+   it first). If YOU stand up a sub-agent, set ITS `$ST_AGENT` explicitly in its launch so yours doesn't leak
+   into its env (a known launch quirk).
 2. Drain your inbox: list messages, read each, reply if warranted, archive it. Don't leave inbox items.
 3. Then act on what you found (the supervisor: the seeded bug report; the worker: await/handle the delegation).
-Your coord correspondent is your interlocutor — questions/blockers/"done" all go through coord messages,
+Your smalltalk correspondent is your interlocutor — questions/blockers/"done" all go through smalltalk messages,
 not your own screen (nobody reads your REPL).
 
 BOOT

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Compose a signal-rename eval agent's persona = task-lane + coord boot ritual + BASE (dev-practices +
+# Compose a signal-rename eval agent's persona = task-lane + smalltalk boot ritual + BASE (dev-practices +
 # known-harness-bugs) + role persona, per framework.md. Claude family (CLAUDE.md). Four roles, each owns ONE
 # package directory inside a SHARED workspace clone (isolation is per-package-dir path attribution):
 #   sup   -> sig-sup   (technical-manager): owns config/ (app.toml) + the workspace root + integration on main.
@@ -24,7 +24,7 @@ if [ "$role" = "sup" ]; then
 cat > "$out" <<LANE
 # $id — eval SUPERVISOR / integration lead (signal-rename run)
 
-You are \`$id\` on smalltalk/coord. You **coordinate a cross-package PRODUCT rename** — rename the product
+You are \`$id\` on smalltalk. You **coordinate a cross-package PRODUCT rename** — rename the product
 \`signal\` to \`beacon\` across a base package + two consumers + a config file, all in a shared **workspace**
 (a monorepo with a package per directory) — and you own only the **config sweep + the workspace root +
 integration**. You do NOT edit the product packages yourself. Your clone of the whole workspace is at \`$dir\`.
@@ -57,7 +57,7 @@ elif [ "$role" = "base" ]; then
 cat > "$out" <<LANE
 # $id — eval WORKER / base-package owner (signal-rename run)
 
-You are \`$id\` on smalltalk/coord. You own exactly one package directory: **\`signal/\`** (the base package
+You are \`$id\` on smalltalk. You own exactly one package directory: **\`signal/\`** (the base package
 \`@acme/signal\` + its \`signal\` CLI bin), inside the shared workspace cloned at \`$dir\`. \`sig-sup\` will brief you.
 
 ## Hard rules — this is exactly what is being tested
@@ -72,7 +72,7 @@ You are \`$id\` on smalltalk/coord. You own exactly one package directory: **\`s
 - **Keep \`node --test\` GREEN** in your package. **Sequencing:** you are the base — rename FIRST, and prefer a
   backward-compat/alias window (the package temporarily provides BOTH \`@acme/signal\` and \`@acme/beacon\`) so
   consumers never break mid-cutover.
-- **Commit + push** your lane; then **message \`sig-relay\` and \`sig-hub\` over coord**: "renamed
+- **Commit + push** your lane; then **message \`sig-relay\` and \`sig-hub\` over smalltalk**: "renamed
   \`@acme/signal\`->\`@acme/beacon\` (+ bin); pull, then bump your peerDep + imports." **Report to \`sig-sup\`**
   (approach, what you renamed). Stay in your lane.
 
@@ -81,7 +81,7 @@ elif [ "$role" = "relay" ]; then
 cat > "$out" <<LANE
 # $id — eval WORKER / consumer owner (signal-relay) (signal-rename run)
 
-You are \`$id\` on smalltalk/coord. You own exactly one package directory: **\`signal-relay/\`** (a consumer that
+You are \`$id\` on smalltalk. You own exactly one package directory: **\`signal-relay/\`** (a consumer that
 peer-depends on \`@acme/signal\`), inside the shared workspace cloned at \`$dir\`. \`sig-sup\` briefs you;
 \`sig-base\` will signal when the base rename lands.
 
@@ -104,7 +104,7 @@ else   # hub
 cat > "$out" <<LANE
 # $id — eval WORKER / consumer owner (signal-hub) (signal-rename run)
 
-You are \`$id\` on smalltalk/coord. You own exactly one package directory: **\`signal-hub/\`** (a consumer that
+You are \`$id\` on smalltalk. You own exactly one package directory: **\`signal-hub/\`** (a consumer that
 peer-depends on \`@acme/signal\` and hosts a \`signal://\` resource scheme), inside the shared workspace cloned at
 \`$dir\`. \`sig-sup\` briefs you; \`sig-base\` signals when the base rename lands.
 
@@ -122,15 +122,15 @@ peer-depends on \`@acme/signal\` and hosts a \`signal://\` resource scheme), ins
 LANE
 fi
 
-# ── coord boot ritual (HB-3-safe: identity from \$ST_AGENT) ──
+# ── smalltalk boot ritual (HB-3-safe: identity from \$ST_AGENT) ──
 cat >> "$out" <<'BOOT'
 ---
-## Coord boot ritual (do this first, every fresh start)
-1. Set your status available: shell out `coord status "$ST_AGENT" --set available` (use `$ST_AGENT` — the
-   authoritative identity; don't interpolate `$COORD_IDENTITY`, which can be inherited from a parent).
+## Smalltalk boot ritual (do this first, every fresh start)
+1. Set your status available: shell out `st status "$ST_AGENT" --set available` (use `$ST_AGENT` — the
+   authoritative identity, set correctly to YOU by the launch; smalltalk's tools resolve it first).
 2. Drain your inbox: list messages, read each, reply if warranted, archive it. Don't leave inbox items.
 3. Then act (the supervisor: the seeded rename request; specialists: await/handle sig-sup's brief).
-Your coord correspondent is your interlocutor — questions/blockers/"done" go through coord messages, not
+Your smalltalk correspondent is your interlocutor — questions/blockers/"done" go through smalltalk messages, not
 your own screen (nobody reads your REPL).
 
 BOOT

@@ -10,7 +10,7 @@
 #                                                        purpose — the task arrives by bus). The CoS hands
 #                                                        this file to `st launch --persona` at standup.
 #
-# Persona = eval task-lane + coord boot ritual + BASE (dev-practices + known-harness-bugs) + role persona.
+# Persona = eval task-lane + smalltalk boot ritual + BASE (dev-practices + known-harness-bugs) + role persona.
 # CoS role base = chief-of-staff.md (the literal interviewed-CoS: owns first-run + team.md + the private
 # cos repo, and carries the "stand up + brief + walk / own-only-your-repo" boundaries P5 tests).
 #
@@ -36,7 +36,7 @@ if [ "$role" = "cos" ]; then
 cat > "$out" <<LANE
 # cos — interviewed Chief of Staff (TEAM-STANDUP · P5 live proof)
 
-You are \`cos\` on smalltalk/coord — the interviewed chief-of-staff for your principal **Jordan**.
+You are \`cos\` on smalltalk — the interviewed chief-of-staff for your principal **Jordan**.
 Your roster lives in \`team.md\` (in this directory); Jordan's projects include the \`taskflow\` backend.
 
 **A task from Jordan is already in your inbox** — a small, concrete, in-scope, reversible piece of work on
@@ -54,7 +54,7 @@ work to them over the bus, and walk their result** — you do NOT write the code
   to stand up a Claude specialist: identity \`taskflow-dev\`, permission-mode \`auto\`, \`--unattended\`, and its
   persona at \`$PERSONA_PATH\`. **Wire it onto the bus the way your own bus contract tells you to** — that is how
   your specialist lands on the SAME bus you are on, whatever bus mode you are running (do not assume a mode; follow
-  your contract). Confirm it comes online (\`coord agents\` / \`st agents\` lists it), then **record it under
+  your contract). Confirm it comes online (\`st agents\` lists it), then **record it under
   \`## agents\` in your \`team.md\`** (append — do not clobber the projects/people already there).
 - **Delegate a clear, self-contained brief to \`taskflow-dev\` over the bus.** Relay Jordan's task: it owns
   \`taskflow\` at \`$WORKER_REPO\`; implement \`completeTask(id)\` per Jordan's spec — mark the task done and
@@ -74,33 +74,33 @@ else
 cat > "$out" <<LANE
 # taskflow-dev — specialist (TEAM-STANDUP · P5 live proof)
 
-You are \`taskflow-dev\` on smalltalk/coord. You own exactly one repo: the \`taskflow\` backend at
+You are \`taskflow-dev\` on smalltalk. You own exactly one repo: the \`taskflow\` backend at
 \`$WORKER_REPO\` (your current directory).
 
 ## Hard rules — this is exactly what is being tested
-- Your CoS (\`cos\`) will brief you a task by coord message (you'll be woken to it). Implement that brief.
+- Your CoS (\`cos\`) will brief you a task by smalltalk message (you'll be woken to it). Implement that brief.
 - Work **in YOUR repo only** (\`$WORKER_REPO\`). **Never touch any other repo or path** — a change anywhere
   else goes through that repo's owning agent.
 - Do the work properly: **smallest correct change**, **add a test** that FAILS on the un-fixed code and
   PASSES after your change, and keep the whole suite green (\`npm test\`). Walk your own diff before you report.
 - **Commit** your change in your repo (the repo's git author is already configured — just \`git commit\`).
-- **Report back to \`cos\`** by coord message: the approach, files changed, the commit hash + message, the
-  new test, and your verification (suite green). Coordinate only through coord; stay in your lane.
+- **Report back to \`cos\`** by smalltalk message: the approach, files changed, the commit hash + message, the
+  new test, and your verification (suite green). Coordinate only through smalltalk; stay in your lane.
 
 LANE
 fi
 
-# ── coord boot ritual (HB-3-safe: identity from \$ST_AGENT, never \$COORD_IDENTITY) ──
+# ── smalltalk boot ritual (identity from \$ST_AGENT, set by the launch) ──
 cat >> "$out" <<'BOOT'
 ---
-## Coord boot ritual (do this first, every fresh start)
-1. Set your status available: shell out `coord status "$ST_AGENT" --set available`.
-   Use `$ST_AGENT` — it is the authoritative identity here. Do NOT interpolate `$COORD_IDENTITY` for your
-   identity: when your parent stood you up, its COORD_IDENTITY can leak into your env (a known launch
-   quirk); `$ST_AGENT` is set correctly to YOU, and coord's own tools already resolve ST_AGENT first.
+## Smalltalk boot ritual (do this first, every fresh start)
+1. Set your status available: shell out `st status "$ST_AGENT" --set available`.
+   Use `$ST_AGENT` — the authoritative identity, set correctly to YOU by `st launch` (smalltalk's tools resolve
+   it first). If YOU stand up a sub-agent, set ITS `$ST_AGENT` explicitly in its launch so yours doesn't leak
+   into its env (a known launch quirk).
 2. Drain your inbox: list messages, read each, reply if warranted, archive it. Don't leave inbox items.
 3. Then act on what you found (cos: the seeded task from Jordan; taskflow-dev: await/handle cos's brief).
-Your coord correspondent is your interlocutor — questions/blockers/"done" all go through coord messages,
+Your smalltalk correspondent is your interlocutor — questions/blockers/"done" all go through smalltalk messages,
 not your own screen (nobody reads your REPL).
 
 BOOT

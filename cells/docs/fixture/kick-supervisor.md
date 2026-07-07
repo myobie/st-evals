@@ -1,5 +1,5 @@
 <!--
-HERMETIC KICK for the Docs ("Explain it") eval. The ONLY input. Seeded by spin.sh into doc-sup's coord
+HERMETIC KICK for the Docs ("Explain it") eval. The ONLY input. Seeded by spin.sh into doc-sup's smalltalk
 inbox with a boot-time ms filename so the boot ritual ACTS on it. `from:` is the synthetic requester
 (eval-runner) so the loop is observable + reproducible. spin.sh strips this HTML header.
 -->
