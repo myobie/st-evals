@@ -32,7 +32,7 @@ GATE_FAIL=0
 
 BIN=""; for c in st smalltalk coord; do command -v "$c" >/dev/null 2>&1 && { BIN="$c"; break; }; done
 [ -z "$BIN" ] && { echo "no smalltalk CLI on PATH"; exit 1; }
-c() { local who="$1"; shift; env -u COORD_IDENTITY ST_ROOT="$STR" ST_AGENT="$who" "$BIN" "$@"; }
+c() { local who="$1"; shift; env ST_ROOT="$STR" ST_AGENT="$who" "$BIN" "$@"; }
 
 echo "team-standup P4 · CLI=$BIN · sandbox=$SB"
 
@@ -41,7 +41,7 @@ gate "P4a — CoS stands up a specialist (launch generates a bootable, correctly
 mkdir -p "$STR/$SPEC/inbox" "$STR/$SPEC/archive"   # same mkdir-first friction bootstrap flags
 DRY=$( cd "$SB/taskflow" && c cos launch claude --identity "$SPEC" --dry-run 2>&1 )
 if printf '%s\n' "$DRY" | grep -q "ST_AGENT = \"$SPEC\""; then
-  pass "launch writes the CHILD's identity (ST_AGENT = \"$SPEC\") — HB-3 mitigated (ST_AGENT wins over an inherited COORD_IDENTITY)"
+  pass "launch writes the CHILD's identity (ST_AGENT = \"$SPEC\") — HB-3 mitigated (ST_AGENT wins over an inherited launcher identity)"
 else
   fail "launch pty.toml does not set the child's ST_AGENT — HB-3 identity-leak risk"
 fi

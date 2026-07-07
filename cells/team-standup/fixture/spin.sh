@@ -4,7 +4,7 @@
 # onboarding.md documents it), so the eval dogfoods the whole launch surface. The CoS then stands up
 # taskflow-dev ITSELF via `st launch` during the run (that IS the P5 test — untouched).
 # SELF-ISOLATING: creates + exports an isolated bus root ($SB/st-root) so nothing touches the live network;
-# the st-launched CoS (and the worker it stands up) inherit ST_ROOT/COORD_ROOT from this process.
+# the st-launched CoS (and the worker it stands up) inherit ST_ROOT from this process.
 # Composes personas, pre-stages the worker's Claude harness startup-gates (so the CoS's stood-up specialist
 # doesn't stall — the CoS's own `st launch` still installs the persona + boots it), seeds the hermetic
 # kick, and launches the CoS LAST (after the kick lands).
@@ -18,7 +18,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SB="${1:-${EVAL_SANDBOX:-./.sandbox}/team-standup}"
 STR="$SB/st-root"
 W="$SB/taskflow"
-export ST_ROOT="$STR"; export COORD_ROOT="$STR"      # st-launched CoS (+ its stood-up worker) -> isolated bus
+export ST_ROOT="$STR"      # st-launched CoS (+ its stood-up worker) -> isolated bus
 HOOKS="${ST_HOOKS_DIR:?set ST_HOOKS_DIR to <smalltalk>/examples/claude-code/hooks (worker gate pre-stage)}"
 # stev-retirement: per-run decoupled short PTY_ROOT (shared harness). Exported BEFORE the CoS launches, so the
 # CoS's pty session — AND the worker the CoS stands up via its OWN `st launch` (which inherits PTY_ROOT from the

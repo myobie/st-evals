@@ -44,7 +44,7 @@ GATE_FAIL=0
 
 BIN=""; for cand in st smalltalk coord; do command -v "$cand" >/dev/null 2>&1 && { BIN="$cand"; break; }; done
 [ -z "$BIN" ] && { echo "no smalltalk CLI on PATH"; exit 1; }
-c() { local who="$1"; shift; env -u COORD_IDENTITY ST_ROOT="$STR" ST_AGENT="$who" "$BIN" "$@"; }
+c() { local who="$1"; shift; env ST_ROOT="$STR" ST_AGENT="$who" "$BIN" "$@"; }
 
 # The scripted principal = the seeded answers a live human would give the CoS.
 # (cos's decision: non-interactive interview mode — the CoS reads answers from a

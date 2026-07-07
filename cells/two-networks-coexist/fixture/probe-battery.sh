@@ -18,8 +18,8 @@ cnt(){ ls -1 "$1" 2>/dev/null | wc -l | tr -d ' '; }
 
 # ── read-only structural probes (clean state) ─────────────────────────────────
 echo "== P-enumerate (each root enumerates ONLY its own agents) =="
-A_ag=$(ST_ROOT="$RA" COORD_ROOT="$RA" coord agents --json 2>/dev/null)
-B_ag=$(ST_ROOT="$RB" COORD_ROOT="$RB" coord agents --json 2>/dev/null)
+A_ag=$(ST_ROOT="$RA" st agents --json 2>/dev/null)
+B_ag=$(ST_ROOT="$RB" st agents --json 2>/dev/null)
 echo "$A_ag" | grep -q '"beacon-b"' && no "A enumerated B-only 'beacon-b' (cross-enumeration leak)" || ok "A->coord agents lists only A's agents (no beacon-b)"
 echo "$B_ag" | grep -q '"beacon-a"' && no "B enumerated A-only 'beacon-a' (cross-enumeration leak)" || ok "B->coord agents lists only B's agents (no beacon-a)"
 
@@ -39,15 +39,15 @@ fi
 
 # ── mutating delivery probes (run LAST — they create local dead-letters) ───────
 echo "== P-deliver-collision (a message to the SHARED identity 'wk' stays in the sender's root) =="
-ST_ROOT="$RA" COORD_ROOT="$RA" coord message send wk --from sup --subject "A->wk" -m "COLLISION-PROBE-FROM-A" >/dev/null 2>&1
-ST_ROOT="$RB" COORD_ROOT="$RB" coord message send wk --from sup --subject "B->wk" -m "COLLISION-PROBE-FROM-B" >/dev/null 2>&1
+ST_ROOT="$RA" st message send wk --from sup --subject "A->wk" -m "COLLISION-PROBE-FROM-A" >/dev/null 2>&1
+ST_ROOT="$RB" st message send wk --from sup --subject "B->wk" -m "COLLISION-PROBE-FROM-B" >/dev/null 2>&1
 grep -rslq 'COLLISION-PROBE-FROM-A' "$RB/wk/inbox" 2>/dev/null && no "A's message to 'wk' LEAKED into B's colliding wk inbox" || ok "A->wk landed only in A (not in B's same-named wk)"
 grep -rslq 'COLLISION-PROBE-FROM-B' "$RA/wk/inbox" 2>/dev/null && no "B's message to 'wk' LEAKED into A's colliding wk inbox" || ok "B->wk landed only in B (not in A's same-named wk)"
 
 echo "== P-cross-address (addressing the OTHER net's unique agent NEVER reaches it) =="
 bb_before=$(cnt "$RB/beacon-b/inbox"); ba_before=$(cnt "$RA/beacon-a/inbox")
-ST_ROOT="$RA" COORD_ROOT="$RA" coord message send beacon-b --from sup --subject "A->beacon-b" -m "cross from A" >/dev/null 2>&1
-ST_ROOT="$RB" COORD_ROOT="$RB" coord message send beacon-a --from sup --subject "B->beacon-a" -m "cross from B" >/dev/null 2>&1
+ST_ROOT="$RA" st message send beacon-b --from sup --subject "A->beacon-b" -m "cross from A" >/dev/null 2>&1
+ST_ROOT="$RB" st message send beacon-a --from sup --subject "B->beacon-a" -m "cross from B" >/dev/null 2>&1
 bb_after=$(cnt "$RB/beacon-b/inbox"); ba_after=$(cnt "$RA/beacon-a/inbox")
 [ "$bb_after" = "$bb_before" ] && ok "A addressing B-only 'beacon-b' never reached B (\$RB/beacon-b/inbox unchanged=$bb_after; A dead-letters locally)" || no "A's msg REACHED B's beacon-b ($bb_before->$bb_after) — cross-network delivery LEAK"
 [ "$ba_after" = "$ba_before" ] && ok "B addressing A-only 'beacon-a' never reached A (\$RA/beacon-a/inbox unchanged=$ba_after; B dead-letters locally)" || no "B's msg REACHED A's beacon-a ($ba_before->$ba_after) — cross-network delivery LEAK"

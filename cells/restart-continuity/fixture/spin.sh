@@ -5,7 +5,7 @@
 # (auto-materializes if the sandbox is absent).
 #
 # SELF-ISOLATING: creates + exports an isolated bus root ($SB/st-root); the st-launched agents (and the
-# injector's cold relaunch) inherit ST_ROOT/COORD_ROOT — nothing touches the operator's live network.
+# injector's cold relaunch) inherit ST_ROOT — nothing touches the operator's live network.
 #
 #   ./spin.sh [SANDBOX]        # sandbox defaults to ${EVAL_SANDBOX:-./.sandbox}/restart-continuity
 #   needs: PERSONAS_DIR (bin/ensure-personas.sh provisions it). No external ST_ROOT / ST_HOOKS_DIR needed.
@@ -14,7 +14,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$HERE/../../../bin/lib-harness.sh"
 SB="${1:-${EVAL_SANDBOX:-./.sandbox}/restart-continuity}"
 STR="$SB/st-root"                                    # SELF-ISOLATED bus root (never the live network)
-export ST_ROOT="$STR"; export COORD_ROOT="$STR"      # st-launched agents + the injector inherit these
+export ST_ROOT="$STR"      # st-launched agents + the injector inherit these
 stev_init "$(basename "$(dirname "$HERE")")" "$SB"   # per-run id + decoupled short PTY_ROOT
 export PTY_ROOT="$(stev_pty_root "$SB")"             # stev-retirement: st launch honors this verbatim (#69) -> every session in the run's isolated pty root
 stev_arm_teardown "$SB"                              # trap: teardown on crash/interrupt/early-exit

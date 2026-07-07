@@ -3,7 +3,7 @@
 # tui-cards (auto, own a view each) + tui-ux (auto, usability reviewer, no code). Run AFTER setup-sandbox.sh
 # (auto-materializes if the sandbox is absent). SELF-ISOLATING: creates + exports an isolated COORDINATION
 # bus root ($SB/st-root) so nothing touches the operator's live network; the st-launched agents inherit
-# ST_ROOT/COORD_ROOT from this process (RISK 2). Composes personas (standalone files for --persona),
+# ST_ROOT from this process (RISK 2). Composes personas (standalone files for --persona),
 # launches the workers first + supervisor last, and seeds the hermetic build request into tui-sup's inbox.
 # Claude agents auto-wake via st launch's asyncRewake hook.
 # TWO ROOTS (do not conflate): $SB/st-root is the COORDINATION bus (where the team talks). The viz they BUILD
@@ -17,7 +17,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$HERE/../../../bin/lib-harness.sh"
 SB="${1:-${EVAL_SANDBOX:-./.sandbox}/tui-build}"
 STR="$SB/st-root"                                    # SELF-ISOLATED coordination bus (never the live network)
-export ST_ROOT="$STR"; export COORD_ROOT="$STR"      # st-launched agents inherit these -> isolated bus
+export ST_ROOT="$STR"      # st-launched agents inherit these -> isolated bus
 stev_init "$(basename "$(dirname "$HERE")")" "$SB"   # per-run id + decoupled short PTY_ROOT
 export PTY_ROOT="$(stev_pty_root "$SB")"             # stev-retirement: st launch honors this verbatim (#69) -> every session in the run's isolated pty root
 stev_arm_teardown "$SB"                              # trap: teardown on crash/interrupt/early-exit

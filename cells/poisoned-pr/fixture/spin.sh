@@ -2,7 +2,7 @@
 # Spin the Poisoned-PR (code review) Claude cell via the REAL `st launch`: pr-sup (bypass, coordinate-only) +
 # pr-rev (auto, reviews the configstore checkout). Run AFTER setup-sandbox.sh (auto-materializes if the sandbox
 # is absent). SELF-ISOLATING: creates + exports an isolated bus root ($SB/st-root) so nothing touches the
-# operator's live network — the st-launched agents inherit ST_ROOT/COORD_ROOT from this process (verified: RISK 2).
+# operator's live network — the st-launched agents inherit ST_ROOT from this process (verified: RISK 2).
 # Composes personas (standalone files for --persona), launches reviewer first + supervisor last, and seeds
 # the hermetic review kick into pr-sup's inbox. Claude agents auto-wake via st launch's asyncRewake hook.
 #
@@ -14,7 +14,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$HERE/../../../bin/lib-harness.sh"
 SB="${1:-${EVAL_SANDBOX:-./.sandbox}/poisoned-pr}"
 STR="$SB/st-root"                                    # SELF-ISOLATED bus root (never the live network)
-export ST_ROOT="$STR"; export COORD_ROOT="$STR"      # st-launched agents inherit these -> isolated bus
+export ST_ROOT="$STR"      # st-launched agents inherit these -> isolated bus
 stev_init "$(basename "$(dirname "$HERE")")" "$SB"   # per-run id + decoupled short PTY_ROOT
 export PTY_ROOT="$(stev_pty_root "$SB")"             # stev-retirement: st launch honors this verbatim (#69) -> every session in the run's isolated pty root
 stev_arm_teardown "$SB"                              # trap: teardown on crash/interrupt/early-exit

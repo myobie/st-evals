@@ -25,7 +25,7 @@ live() {
   printf 'version = 1\n' > "$widget/widget.txt"
   git -C "$widget" add -A
   git -C "$widget" -c user.name=wk -c user.email=wk@eval.local commit -q -m "wk: bump widget to v1"
-  ST_ROOT="$r" COORD_ROOT="$r" coord message send sup --from wk --subject "widget done" \
+  ST_ROOT="$r" st message send sup --from wk --subject "widget done" \
     -m "bumped $(basename "$widget") to v1" >/dev/null
 }
 echo "== bring both networks live (concurrent real traffic: wk bumps widget + reports to sup) =="

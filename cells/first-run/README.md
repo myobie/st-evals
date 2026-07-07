@@ -7,8 +7,7 @@
 ## Run it
 
 `fixture/run-real-path.sh` is **self-isolating** — it creates its own scratch network root at
-`$SANDBOX/st-root` and drives every CLI call with an explicit `ST_ROOT` + a clean `ST_AGENT`
-(`env -u COORD_IDENTITY`), so nothing touches your live network. It needs **network once** (gate P0) to
+`$SANDBOX/st-root` and drives every CLI call with an explicit `ST_ROOT` + `ST_AGENT`, so nothing touches your live network. It needs **network once** (gate P0) to
 clone the public `personas` repo pinned to a fixed SHA (read-only); everything after is offline. No
 external `ST_ROOT` / `ST_HOOKS_DIR` / `PERSONAS_DIR` required (this is a Layer-1 CLI onboarding walk, not
 a persona-team launch).

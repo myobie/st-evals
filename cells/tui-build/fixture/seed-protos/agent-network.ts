@@ -38,7 +38,7 @@ function fetchAgents(): AgentRow[] {
       encoding: "utf8",
       timeout: 5000,
     });
-    // CLI prints a one-line warning when honoring COORD_* legacy env; skip
+    // CLI prints a one-line warning when honoring legacy env; skip
     // non-JSON prefix lines defensively.
     const lines = out.split("\n").filter((l) => l.trim().length > 0);
     const jsonLine = lines.find((l) => l.trimStart().startsWith("[")) ?? "[]";

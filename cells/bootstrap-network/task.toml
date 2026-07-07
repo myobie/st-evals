@@ -18,7 +18,7 @@ and following the documented path, can stand up a working CoS network. Four gate
 The point is NOT that an expert can do it — we know the system works — but WHERE the documented
 happy path diverges from reality, because that divergence is exactly the friction Alex will hit.
 So the real output is the FRICTION LIST; fixing it is the deliverable. (Bonus, tested inline: HB-3 —
-does a spawned agent resolve its OWN identity, not the launcher's leaked COORD_IDENTITY?)
+does a spawned agent resolve its OWN identity, not the launcher's leaked identity?)
 """
 
 [method]
@@ -35,7 +35,7 @@ live_vs_dry = "Gates A/B/D run LIVE against the real coord binary (real folders,
 A = "fresh ST_ROOT -> CoS visible in `agents` as available"
 B = "CoS status=available AND a seeded inbox message read + archived (inbox empties)"
 C = "`coord launch claude --identity <spec>` generates a bootable harness whose pty.toml sets the CHILD's ST_AGENT (HB-3 check)"
-D = "CoS<->specialist message round-trip delivered + correctly attributed; leaked COORD_IDENTITY does not win over ST_AGENT"
+D = "CoS<->specialist message round-trip delivered + correctly attributed; a leaked launcher identity does not win over ST_AGENT"
 
 [grader]
 scoring = "per-gate pass/fail (not an axes score). PASS overall = all 4 gates green. The friction list is graded qualitatively: severity-ranked, each finding with what-the-newcomer-sees + a fix + an owner."

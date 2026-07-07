@@ -35,10 +35,10 @@ pass() { printf '  ✓ PASS: %s\n' "$1"; }
 fail() { printf '  ✗ FAIL: %s\n' "$1"; GATE_FAIL=1; }
 GATE_FAIL=0
 
-# Every eval command runs against the sandbox root with a CLEAN identity env:
-# strip the caller's COORD_IDENTITY (HB-3 leak surface) and pass ST_AGENT per
-# command. `c <agent> <args...>` runs the resolved smalltalk CLI as <agent>.
-c() { local who="$1"; shift; env -u COORD_IDENTITY ST_ROOT="$STR" ST_AGENT="$who" "$BIN" "$@"; }
+# Every eval command runs against the sandbox root with an explicit identity:
+# ST_ROOT + ST_AGENT set per command (ST_AGENT is authoritative — no inherited
+# identity can win). `c <agent> <args...>` runs the resolved smalltalk CLI as <agent>.
+c() { local who="$1"; shift; env ST_ROOT="$STR" ST_AGENT="$who" "$BIN" "$@"; }
 
 # ── Gate 0 (pre-flight): which binary does a newcomer actually have? ──────────
 gate "0 — binary on PATH"
@@ -121,7 +121,7 @@ mkdir -p "$STR/$SPEC/inbox" "$STR/$SPEC/archive"   # same mkdir-first friction a
 # harness AND writes the CHILD's identity into pty.toml (the HB-3 leak check).
 DRY=$( cd "$SANDBOX/demo-repo" && c cos launch claude --identity "$SPEC" --dry-run 2>&1 )
 if printf '%s\n' "$DRY" | grep -q "ST_AGENT = \"$SPEC\""; then
-  pass "launch generates pty.toml with [sessions.claude.env] ST_AGENT = \"$SPEC\" (child identity written in — HB-3 mitigated: ST_AGENT is the preferred var, wins over an inherited COORD_IDENTITY)"
+  pass "launch generates pty.toml with [sessions.claude.env] ST_AGENT = \"$SPEC\" (child identity written in — HB-3 mitigated: ST_AGENT is the preferred var, wins over an inherited launcher identity)"
 else
   fail "launch pty.toml does not set the child's ST_AGENT — HB-3 identity-leak risk"
 fi
@@ -146,13 +146,13 @@ if [ -n "$GOT" ] && c "$SPEC" message read --json "$GOT" 2>/dev/null | grep -qE 
 else
   fail "CoS -> $SPEC message not delivered/read"
 fi
-# HB-3 KILL-TEST: reply with COORD_IDENTITY=cos LEAKED into env and NO --from.
-# If ST_AGENT wins, the received message's from: is the specialist, not cos.
+# KILL-TEST: reply with NO --from — the sender must resolve from ST_AGENT alone.
+# If ST_AGENT is authoritative, the received message's from: is the specialist, not cos.
 echo "got it, cos — $SPEC online and reporting for duty" \
-  | env ST_ROOT="$STR" ST_AGENT="$SPEC" COORD_IDENTITY=cos "$BIN" message send cos --subject "re: hello from cos" >/dev/null 2>&1
+  | env ST_ROOT="$STR" ST_AGENT="$SPEC" "$BIN" message send cos --subject "re: hello from cos" >/dev/null 2>&1
 RN=$(c cos message ls 2>/dev/null | grep -E '^[0-9]{13}-' | head -1)
 if [ -n "$RN" ] && c cos message read --json "$RN" 2>/dev/null | grep -qE "\"from\":[[:space:]]*\"$SPEC\""; then
-  pass "$SPEC -> CoS reply delivered; from: $SPEC even with COORD_IDENTITY=cos leaked + no --from (HB-3 dead: ST_AGENT wins)"
+  pass "$SPEC -> CoS reply delivered; from: $SPEC with no --from (ST_AGENT resolves the sender — no inherited identity wins)"
 else
   fail "reply mis-attributed or undelivered (HB-3 identity leak?)"
 fi

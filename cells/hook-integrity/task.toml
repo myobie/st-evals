@@ -16,7 +16,7 @@ restarted agent resumes rather than reconstructs. The silent failure showed up i
 config, never executed — and it went undetected.
 
 v1 asserts the hook's UNGAMEABLE side effect: it injects context/now.md as a <context> block on the
-agent's first turn IFF it fires (and the file is fresh, age < COORD_REHYDRATE_STALE_S, default 24h).
+agent's first turn IFF it fires (and the file is fresh, age < the rehydrate-staleness threshold, default 24h).
 We seed now.md with a SECRET TOKEN the agent can learn no other way — not in its persona, not in its
 repo, not in its inbox — only via that injection. now.md tells the agent to write `REHYDRATE-<token>`
 into HOOK_OK.txt. If the hook fires, the token appears; if it doesn't, it can't. A `--no-hooks`

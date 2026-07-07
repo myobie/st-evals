@@ -2,7 +2,7 @@
 # Spin the Docs (explain-it) Claude cell via the REAL `st launch`: doc-sup (bypass, coordinate-only) +
 # doc-writer (auto, owns the checkout repo). Run AFTER setup-sandbox.sh (auto-materializes if the sandbox
 # is absent). SELF-ISOLATING: creates + exports an isolated bus root ($SB/st-root) so nothing touches the
-# operator's live network — the st-launched agents inherit ST_ROOT/COORD_ROOT from this process (RISK 2).
+# operator's live network — the st-launched agents inherit ST_ROOT from this process (RISK 2).
 # Composes personas (standalone files for --persona), launches worker first + supervisor last, and seeds
 # the hermetic docs request into doc-sup's inbox. Claude agents auto-wake via st launch's asyncRewake hook.
 # After the team reports, grade the docs held-out with cold-reader.sh (a fresh docs-only agent) + grade.sh.
@@ -15,7 +15,7 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$HERE/../../../bin/lib-harness.sh"
 SB="${1:-${EVAL_SANDBOX:-./.sandbox}/docs}"
 STR="$SB/st-root"                                    # SELF-ISOLATED bus root (never the live network)
-export ST_ROOT="$STR"; export COORD_ROOT="$STR"      # st-launched agents inherit these -> isolated bus
+export ST_ROOT="$STR"      # st-launched agents inherit these -> isolated bus
 stev_init "$(basename "$(dirname "$HERE")")" "$SB"   # per-run id + decoupled short PTY_ROOT
 export PTY_ROOT="$(stev_pty_root "$SB")"             # stev-retirement: st launch honors this verbatim (#69) -> every session in the run's isolated pty root
 stev_arm_teardown "$SB"                              # trap: teardown on crash/interrupt/early-exit
