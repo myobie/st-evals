@@ -2,7 +2,7 @@
 //
 // This mock is invented (no real network). The views (tree / cards) start by rendering it;
 // the eval's build task is to wire them to the real shared data layer (network.ts →
-// `coord agents --enrich --json`) + the frozen fixture. The mock deliberately uses only the
+// `st agents --enrich --json`) + the frozen fixture. The mock deliberately uses only the
 // three statuses the proto type models — the LIVE/frozen network returns more (away / busy /
 // dnd), and noticing + handling those is part of the usability pass.
 

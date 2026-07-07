@@ -79,3 +79,6 @@ echo "SCORE (mechanical): $pass PASS / $fail FAIL / $warn WARN"
 [ "$fail" -eq 0 ] && echo "==> mechanical gates held (isolation + suite + wired-to-real). Usability verdict needs the render + rubric read." \
                    || echo "==> $fail HARD FAILURE(S) — see [FAIL] rows."
 [ "$fail" -eq 0 ]
+
+# stev/demo: archive the built TUI + seed candidates to a grabbable path (folder-generic, coord-free).
+"$(dirname "$0")/copy-artifact.sh" "$SB" >/dev/null 2>&1 || true

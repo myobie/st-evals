@@ -2,7 +2,7 @@
 // agent network. Tree-nav on the left, live `pty peek` of the selected
 // agent's session in the right preview pane. Built on pty/tui.
 //
-// The "build it to usable" reference: real `coord agents --enrich --json`
+// The "build it to usable" reference: real `st agents --enrich --json`
 // for the agent list; real `pty peek` for the preview; arrow keys for
 // navigation; `q` or `Ctrl+\` to quit.
 //
@@ -10,7 +10,7 @@
 //   node --experimental-strip-types examples/agent-viz/agent-network.ts
 //
 // Prereqs:
-//   - smalltalk/coord installed (`coord agents --json` works)
+//   - smalltalk installed (`st agents --json` works)
 //   - target agents have running pty sessions (peek requires alive)
 
 import { execFileSync, spawnSync } from "node:child_process";
@@ -34,7 +34,7 @@ interface AgentRow {
 
 function fetchAgents(): AgentRow[] {
   try {
-    const out = execFileSync("coord", ["agents", "--enrich", "--json"], {
+    const out = execFileSync("st", ["agents", "--enrich", "--json"], {
       encoding: "utf8",
       timeout: 5000,
     });
@@ -105,7 +105,7 @@ const lastRefreshMs = signal<number>(Date.now());
 function refreshPreview(): void {
   const list = agents.get();
   if (list.length === 0) {
-    previewContent.set("(no agents found — is coord installed?)");
+    previewContent.set("(no agents found — is st installed?)");
     return;
   }
   const idx = Math.max(0, Math.min(selectedIndex.get(), list.length - 1));
@@ -194,21 +194,21 @@ const root = screen({
     ]),
   ],
   handleKey: (key: KeyEvent, _ctx) => {
-    if (key.key === "q") {
+    if (key.name === "q") {
       runner.stop();
       return true;
     }
-    if (key.key === "up" || (key.ctrl && key.key === "p")) {
+    if (key.name === "up" || (key.ctrl && key.name === "p")) {
       const sel = selectedIndex.get();
       selectedIndex.set(Math.max(0, sel - 1));
       return true;
     }
-    if (key.key === "down" || (key.ctrl && key.key === "n")) {
+    if (key.name === "down" || (key.ctrl && key.name === "n")) {
       const sel = selectedIndex.get();
       selectedIndex.set(Math.min(agents.get().length - 1, sel + 1));
       return true;
     }
-    if (key.key === "r") {
+    if (key.name === "r") {
       agents.set(fetchAgents());
       lastRefreshMs.set(Date.now());
       refreshPreview();
