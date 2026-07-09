@@ -9,7 +9,7 @@
 set -euo pipefail
 STEV_HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; . "$STEV_HERE/../../../bin/lib-harness.sh"
 role="$1"; SB="${2:-${EVAL_SANDBOX:-./.sandbox}/fork-in-the-road-codex}"
-ROOT="${ST_ROOT:-${XDG_STATE_HOME:-$HOME/.local/state}/smalltalk}"
+ROOT="$SB/st-root"   # SELF-ISOLATE the bus root (UNCONDITIONAL, matches spin.sh — never the operator's prod root)
 
 case "$role" in
   sup) id="fdx-sup"; d="$SB/sup" ;;   # coordinate-only; writes RECOMMENDATION.md in its own dir
