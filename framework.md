@@ -115,7 +115,7 @@ Run `bin/ensure-personas.sh` to clone the personas repo at the pin; cells read t
 ## Capability gating
 
 Not every setup can run every cell. `bin/preflight.sh` detects installed tools (claude, codex,
-ollama+GLM, git, gh, node, and the `st`/`coord` bus) and reports the **runnable subset**: a cell runs
+ollama+GLM, git, gh, node, and the `st` bus) and reports the **runnable subset**: a cell runs
 only if *every* capability it needs is present. **Cross-family judging** (a quality judge from a different
 family than the subject) is offered only when **≥2 model families** are installed — so the judge question
 self-resolves: it simply doesn't run without two families.

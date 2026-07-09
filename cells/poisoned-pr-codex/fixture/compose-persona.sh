@@ -3,7 +3,7 @@
 #   ./compose-persona.sh <sup|rev> [SANDBOX] [REQUESTER]
 set -euo pipefail
 role="$1"; SB="${2:-${EVAL_SANDBOX:-./.sandbox}/poisoned-pr-codex}"; REQUESTER="${3:-eval-runner}"
-PZ="${PERSONAS_DIR:?set PERSONAS_DIR to a checkout of github.com/myobie/personas (bin/ensure-personas.sh clones it pinned)}"; REPO="$SB/rev"
+PZ="${PERSONAS_DIR:?set PERSONAS_DIR to a checkout of github.com/compoundingtech/personas (bin/ensure-personas.sh clones it pinned)}"; REPO="$SB/rev"
 case "$role" in
   sup) id="prx-sup"; dir="$SB/sup"; rolefile="$PZ/manager.md" ;;
   rev) id="prx-rev"; dir="$REPO";   rolefile="$PZ/specialist.md" ;;

@@ -29,7 +29,7 @@ set -uo pipefail
 
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SANDBOX="${1:-${EVAL_SANDBOX:-./.sandbox}/first-run-interview}"
-PERSONAS_URL="${PERSONAS_URL:-https://github.com/myobie/personas}"
+PERSONAS_URL="${PERSONAS_URL:-https://github.com/compoundingtech/personas}"
 # Pin the public contract to a known SHA (bump deliberately). Reproducibility = this pin.
 PERSONAS_PIN="${PERSONAS_PIN:-f12458a3a0139ab31bcad7c8b3a9f5750f873a97}"
 STR="$SANDBOX/st-root"     # the fresh network root

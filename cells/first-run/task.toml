@@ -18,7 +18,7 @@ never the public repo, and nothing leaks back.
 """
 
 [setup]
-personas_url = "https://github.com/myobie/personas"
+personas_url = "https://github.com/compoundingtech/personas"
 personas_pin = "f12458a3a0139ab31bcad7c8b3a9f5750f873a97"   # bump deliberately; reproducibility = this pin
 principal    = "fixture/principal-answers.env — a fully SYNTHETIC indie dev (Jordan Rivera); zero real PII"
 runner       = "fixture/run-real-path.sh [SANDBOX] — self-asserting; exit 0 = every gate PASS; friction is a finding, not a failure"

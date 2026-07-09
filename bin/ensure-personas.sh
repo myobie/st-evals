@@ -13,7 +13,7 @@ set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
 
-PERSONAS_URL="${PERSONAS_URL:-https://github.com/myobie/personas}"
+PERSONAS_URL="${PERSONAS_URL:-https://github.com/compoundingtech/personas}"
 # The public contract, pinned. Bump deliberately; reproducibility = this SHA.
 PERSONAS_PIN="${PERSONAS_PIN:-0b9bd2090192fa53355d1ac9e34d49201051c45c}"
 DEST="${PERSONAS_DIR:-$ROOT/.personas}"

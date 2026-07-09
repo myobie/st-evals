@@ -8,7 +8,7 @@
 #   ./compose-persona.sh <sup|tree|cards|ux> [SANDBOX] [REQUESTER]
 set -euo pipefail
 role="$1"; SB="${2:-${EVAL_SANDBOX:-./.sandbox}/tui-build}"; REQUESTER="${3:-river}"
-PZ="${PERSONAS_DIR:?set PERSONAS_DIR to a checkout of github.com/myobie/personas (bin/ensure-personas.sh clones it pinned)}"
+PZ="${PERSONAS_DIR:?set PERSONAS_DIR to a checkout of github.com/compoundingtech/personas (bin/ensure-personas.sh clones it pinned)}"
 FIX="$SB/fixture/smalltalk"   # the frozen network the built viz reads (tests/grading)
 
 case "$role" in

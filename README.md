@@ -28,8 +28,8 @@ bin/st-evals list          # the cell catalogue
 bin/st-evals run ghost-bug # run a cell end-to-end
 ```
 
-**Requirements.** A POSIX shell, `git`, and the [`smalltalk`](https://github.com/myobie/smalltalk) bus
-(`st`/`coord`) + the [`pty`](https://github.com/myobie/pty) session harness on your `PATH`. At least one
+**Requirements.** A POSIX shell, `git`, and the [`smalltalk`](https://github.com/compoundingtech/smalltalk) bus
+(`st`) + the [`pty`](https://github.com/compoundingtech/pty) session harness on your `PATH`. At least one
 agent harness (`claude` and/or `codex`, or `ollama` + a GLM model). Node for the cells whose sample
 services are JS. `preflight` tells you exactly what you have and what each cell needs — a cell runs only
 if every capability it needs is present, and **cross-family judging** unlocks once you have ≥2 families.
@@ -40,7 +40,7 @@ if every capability it needs is present, and **cross-family judging** unlocks on
 |---|---|
 | `ST_ROOT` | a scratch network root (throwaway) |
 | `ST_HOOKS_DIR` | your `<smalltalk>/examples/claude-code/hooks` |
-| `PERSONAS_DIR` | a checkout of the public [`personas`](https://github.com/myobie/personas) repo — `bin/ensure-personas.sh` clones it pinned for you |
+| `PERSONAS_DIR` | a checkout of the public [`personas`](https://github.com/compoundingtech/personas) repo — `bin/ensure-personas.sh` clones it pinned for you |
 
 ---
 

@@ -5,7 +5,7 @@
 #   ./compose-persona.sh <sup|a|b|c> [SANDBOX] [REQUESTER]
 set -euo pipefail
 role="$1"; SB="${2:-${EVAL_SANDBOX:-./.sandbox}/fork-in-the-road}"; REQUESTER="${3:-eval-runner}"
-PZ="${PERSONAS_DIR:?set PERSONAS_DIR to a checkout of github.com/myobie/personas (bin/ensure-personas.sh clones it pinned)}"
+PZ="${PERSONAS_DIR:?set PERSONAS_DIR to a checkout of github.com/compoundingtech/personas (bin/ensure-personas.sh clones it pinned)}"
 
 case "$role" in
   sup) id="fd-sup"; dir="$SB/sup"; rolefile="$PZ/manager.md" ;;

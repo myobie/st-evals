@@ -10,7 +10,7 @@ role="$1"; family="$2"; SB="${3:-${EVAL_SANDBOX:-./.sandbox}/license-mixed}"
 # Requester = who sent the kick + who the supervisor confirms back to. Defaults to the harness
 # (eval-runner) so the loop is fully observable + doesn't contaminate a live agent's inbox.
 REQUESTER="${4:-eval-runner}"
-PZ="${PERSONAS_DIR:?set PERSONAS_DIR to a checkout of github.com/myobie/personas (bin/ensure-personas.sh clones it pinned)}"   # canonical role/base personas (read-only)
+PZ="${PERSONAS_DIR:?set PERSONAS_DIR to a checkout of github.com/compoundingtech/personas (bin/ensure-personas.sh clones it pinned)}"   # canonical role/base personas (read-only)
 WORKER_REPO="$SB/worker"
 # Identities are overridable (env) so a cross-family REPEAT cell uses FRESH ids and never collides
 # with a prior cell's smalltalk dir. Default to the Mixed-cell names for backward compat.
