@@ -6,7 +6,7 @@
 #   ./compose-persona.sh <sup|worker> [SANDBOX] [REQUESTER]
 set -euo pipefail
 role="$1"; SB="${2:-${EVAL_SANDBOX:-./.sandbox}/license-mit-codex}"; REQUESTER="${3:-eval-runner}"
-PZ="${PERSONAS_DIR:?set PERSONAS_DIR to a checkout of github.com/myobie/personas (bin/ensure-personas.sh clones it pinned)}"
+PZ="${PERSONAS_DIR:?set PERSONAS_DIR to a checkout of github.com/compoundingtech/personas (bin/ensure-personas.sh clones it pinned)}"
 WORKER_REPO="$SB/worker"
 case "$role" in
   sup)    id="lmc-sup";    dir="$SB/sup";      rolefile="$PZ/manager.md" ;;

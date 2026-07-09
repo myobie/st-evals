@@ -6,7 +6,7 @@
 #   ./compose-persona.sh [SANDBOX]
 set -euo pipefail
 SB="${1:-${EVAL_SANDBOX:-./.sandbox}/weird-git-setup}"
-PZ="${PERSONAS_DIR:?set PERSONAS_DIR to a checkout of github.com/myobie/personas (bin/ensure-personas.sh)}"
+PZ="${PERSONAS_DIR:?set PERSONAS_DIR to a checkout of github.com/compoundingtech/personas (bin/ensure-personas.sh)}"
 id="wg-dev"
 mkdir -p "$SB/personas-local"; out="$SB/personas-local/$id.md"
 

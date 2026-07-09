@@ -16,7 +16,7 @@ report→walk loop must be visible on the message bus (no out-of-band coordinati
 """
 
 [setup]
-personas_url = "https://github.com/myobie/personas"
+personas_url = "https://github.com/compoundingtech/personas"
 personas_pin = "f12458a3a0139ab31bcad7c8b3a9f5750f873a97"   # bump deliberately; reproducibility = this pin
 principal    = "the synthetic Jordan world from bootstrap/first-run — a small GREEN `taskflow` repo that the CoS stands up a specialist (`taskflow-dev`) to own"
 sandbox      = "fixture/setup-sandbox.sh [SANDBOX] — a fresh ISOLATED bus root ($SB/st-root, never your live network) + the taskflow repo + the CoS's team.md roster"

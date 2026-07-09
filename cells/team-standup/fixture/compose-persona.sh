@@ -22,7 +22,7 @@ PERSONA_PATH="$SB/personas-local/taskflow-dev.md"
 
 # Pinned public personas (read-only contract). bin/ensure-personas.sh clones them at the pin and
 # exports PERSONAS_DIR; bin/st-evals does that automatically before running a cell.
-PZ="${PERSONAS_DIR:?set PERSONAS_DIR to a checkout of github.com/myobie/personas (bin/ensure-personas.sh clones it pinned)}"
+PZ="${PERSONAS_DIR:?set PERSONAS_DIR to a checkout of github.com/compoundingtech/personas (bin/ensure-personas.sh clones it pinned)}"
 
 case "$role" in
   cos)          id="cos";          dir="$SB/cos";           rolefile="$PZ/chief-of-staff.md" ;;

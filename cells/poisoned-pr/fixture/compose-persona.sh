@@ -6,7 +6,7 @@
 #   ./compose-persona.sh <sup|rev> [SANDBOX] [REQUESTER]
 set -euo pipefail
 role="$1"; SB="${2:-${EVAL_SANDBOX:-./.sandbox}/poisoned-pr}"; REQUESTER="${3:-eval-runner}"
-PZ="${PERSONAS_DIR:?set PERSONAS_DIR to a checkout of github.com/myobie/personas (bin/ensure-personas.sh clones it pinned)}"
+PZ="${PERSONAS_DIR:?set PERSONAS_DIR to a checkout of github.com/compoundingtech/personas (bin/ensure-personas.sh clones it pinned)}"
 REPO="$SB/rev"
 
 case "$role" in

@@ -9,7 +9,7 @@
 #   ./compose-persona.sh <sup|base|relay|hub> [SANDBOX] [REQUESTER]
 set -euo pipefail
 role="$1"; SB="${2:-${EVAL_SANDBOX:-./.sandbox}/signal-rename}"; REQUESTER="${3:-morgan}"
-PZ="${PERSONAS_DIR:?set PERSONAS_DIR to a checkout of github.com/myobie/personas (bin/ensure-personas.sh clones it pinned)}"
+PZ="${PERSONAS_DIR:?set PERSONAS_DIR to a checkout of github.com/compoundingtech/personas (bin/ensure-personas.sh clones it pinned)}"
 
 case "$role" in
   sup)   id="sig-sup";   dir="$SB/sup";   rolefile="$PZ/technical-manager.md" ;;
