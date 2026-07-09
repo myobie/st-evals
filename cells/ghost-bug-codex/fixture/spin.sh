@@ -10,7 +10,8 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$HERE/../../../bin/lib-harness.sh"
 SB="${1:-${EVAL_SANDBOX:-./.sandbox}/ghost-bug-codex}"
 stev_init "$(basename "$(dirname "$HERE")")" "$SB"; export PTY_ROOT="$(stev_pty_root "$SB")"; stev_arm_teardown "$SB"  # stev-retirement: export the run's decoupled PTY_ROOT (#69) -> `pty up` lands every session in it
-ROOT="${ST_ROOT:-${XDG_STATE_HOME:-$HOME/.local/state}/smalltalk}"
+export ST_ROOT="$SB/st-root"   # SELF-ISOLATE the bus root (UNCONDITIONAL — the cell owns its isolation;
+ROOT="$ST_ROOT"                # never the operator's prod root, even if ST_ROOT is set in the env). pty sockets isolated via PTY_ROOT (above).
 
 echo "== 1/3  wire codex + ding for both agents =="
 "$HERE/configure-codex-agent.sh" sup "$SB"

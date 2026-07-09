@@ -7,7 +7,7 @@
 set -euo pipefail
 STEV_HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; . "$STEV_HERE/../../../bin/lib-harness.sh"
 role="$1"; SB="${2:-${EVAL_SANDBOX:-./.sandbox}/ghost-bug-codex}"
-ROOT="${ST_ROOT:-${XDG_STATE_HOME:-$HOME/.local/state}/smalltalk}"
+ROOT="$SB/st-root"   # SELF-ISOLATE the bus root (UNCONDITIONAL, matches spin.sh — never the operator's prod root)
 
 case "$role" in
   sup) id="gbx-sup"; d="$SB/sup" ;;

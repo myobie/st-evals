@@ -14,7 +14,8 @@ HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SB="${1:-${EVAL_SANDBOX:-./.sandbox}/fork-in-the-road-codex}"
 stev_init "$(basename "$(dirname "$HERE")")" "$SB"; export PTY_ROOT="$(stev_pty_root "$SB")"; stev_arm_teardown "$SB"  # stev-retirement: export the run's decoupled PTY_ROOT (#69) -> `pty up` lands every session in it
 PROPOSERS="${2:-a b c}"
-ROOT="${ST_ROOT:-${XDG_STATE_HOME:-$HOME/.local/state}/smalltalk}"
+export ST_ROOT="$SB/st-root"   # SELF-ISOLATE the bus root (UNCONDITIONAL — the cell owns its isolation;
+ROOT="$ST_ROOT"                # never the operator's prod root, even if ST_ROOT is set in the env). pty sockets isolated via PTY_ROOT (above).
 ROLES="sup $PROPOSERS"
 
 echo "== pty ceiling check (harness gotcha: completed sandboxes leak daemons; Codex = 2 sessions/agent) =="

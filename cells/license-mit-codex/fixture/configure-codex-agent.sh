@@ -7,7 +7,7 @@
 set -euo pipefail
 STEV_HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"; . "$STEV_HERE/../../../bin/lib-harness.sh"
 role="$1"; SB="${2:-${EVAL_SANDBOX:-./.sandbox}/license-mit-codex}"
-ROOT="${ST_ROOT:-${XDG_STATE_HOME:-$HOME/.local/state}/smalltalk}"
+ROOT="$SB/st-root"   # SELF-ISOLATE the bus root (UNCONDITIONAL, matches spin.sh — never the operator's prod root)
 case "$role" in
   sup)    id="lmc-sup";    d="$SB/sup" ;;      # coordinate-only, owns NO product repo (structural isolation)
   worker) id="lmc-worker"; d="$SB/worker" ;;   # owns the widget repo
