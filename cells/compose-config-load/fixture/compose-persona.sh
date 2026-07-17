@@ -6,11 +6,11 @@
 # DELIBERATE: the lane names NEITHER token (the secret in CLAUDE.md nor the greet token in the skill). The whole
 # point is that the agent produces them ONLY by loading its own repo CLAUDE.md + the project skill through the
 # compose — so the lane must not leak them.
-#   ./compose-persona.sh [SANDBOX]
+#   ./compose-persona.sh [SANDBOX] [ID] [DIR]   # defaults: ID=ccl DIR=$SB/repo (control leg: ccln + $SB/control)
 set -euo pipefail
 SB="${1:-${EVAL_SANDBOX:-/tmp}/ccl}"
 PZ="${PERSONAS_DIR:?set PERSONAS_DIR to a checkout of the public personas repo (bin/ensure-personas.sh clones it pinned)}"
-id="ccl"; dir="$SB/repo"
+id="${2:-ccl}"; dir="${3:-$SB/repo}"
 mkdir -p "$SB/personas-local" "$dir"; out="$SB/personas-local/$id.md"
 
 cat > "$out" <<LANE

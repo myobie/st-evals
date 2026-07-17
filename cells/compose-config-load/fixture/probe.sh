@@ -49,5 +49,19 @@ git -C "$pr" hash-object CLAUDE.md > "$P/claude-md-after.sha"
 } > "$P/tokens-present.txt"
 sed 's/^/     /' "$P/tokens-present.txt"
 
+echo "== TOKEN-SOURCE uniqueness (box-free 'prove loading, not echo') — token ONLY in its source file =="
+# The agent-visible surface EXCEPT the token's own source file. If the per-run token appears in ANY of these,
+# a positive SECRET.txt/GREET.txt could be an echo rather than proof of loading. It must appear NOWHERE here.
+surface_secret=("$HERE/kick.md" "$pr/CLAUDE.local.md" "$pr/PERSONA.md" "$pr/DING-BUS.md" "$pr/.claude/settings.local.json")
+surface_greet=("$HERE/kick.md" "$pr/CLAUDE.local.md" "$pr/PERSONA.md" "$pr/DING-BUS.md" "$pr/.claude/settings.local.json" "$pr/CLAUDE.md")
+[ -f "$SB/personas-local/ccl.md" ] && { surface_secret+=("$SB/personas-local/ccl.md"); surface_greet+=("$SB/personas-local/ccl.md"); }
+leak_secret=""; for f in "${surface_secret[@]}"; do [ -f "$f" ] && grep -qF "$SECRET" "$f" && leak_secret="$leak_secret $f"; done
+leak_greet="";  for f in "${surface_greet[@]}";  do [ -f "$f" ] && grep -qF "$GREET"  "$f" && leak_greet="$leak_greet $f";   done
+{
+  echo "secret_leak_files=${leak_secret# }"
+  echo "greet_leak_files=${leak_greet# }"
+} > "$P/token-source.txt"
+sed 's/^/     /' "$P/token-source.txt"
+
 echo "== probe artifacts in $P/ =="; ls -1 "$P" | sed 's/^/     /'
 echo "GRADE:  $HERE/grade.sh \"$SB\""

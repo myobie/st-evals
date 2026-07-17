@@ -13,6 +13,7 @@ SB="${1:-${EVAL_SANDBOX:-/tmp}/ccl}"
 P="$SB/.probe"; REPO="$SB/repo"
 SECRET="$(tr -d '\r\n' < "$SB/.stev/token-secret" 2>/dev/null)"
 GREET="$(tr -d '\r\n' < "$SB/.stev/token-greet" 2>/dev/null)"
+CONTROL="$(tr -d '\r\n' < "$SB/.stev/token-control" 2>/dev/null)"
 pass=0; fail=0; warn=0; skip=0
 ok(){ echo "  [PASS] $1"; pass=$((pass+1)); }
 no(){ echo "  [FAIL] $1"; fail=$((fail+1)); }
@@ -56,22 +57,55 @@ else
   sk "no tokens-present.txt — run probe.sh"
 fi
 
+echo
+echo "== TOKEN-SOURCE (hard, deterministic — 'prove loading, not echo') — token ONLY in its source file =="
+if [ -f "$P/token-source.txt" ]; then
+  ls="$(sed -n 's/^secret_leak_files=//p' "$P/token-source.txt")"
+  lg="$(sed -n 's/^greet_leak_files=//p'  "$P/token-source.txt")"
+  [ -z "$ls" ] && ok "the SECRET token appears in NO agent-visible file except CLAUDE.md (kick/persona/CLAUDE.local.md/PERSONA.md/DING-BUS.md/settings all clean) — a SECRET.txt hit can only be loading, not echo" \
+               || no "the SECRET token LEAKED into: $ls — a positive result could be an echo, not loading"
+  [ -z "$lg" ] && ok "the GREET token appears in NO agent-visible file except the skill SKILL.md — a GREET.txt hit can only be the skill firing" \
+               || no "the GREET token LEAKED into: $lg — a positive greet could be an echo"
+else
+  sk "no token-source.txt — run probe.sh; echo-source uniqueness unproven this run"
+fi
+
 # --- live headline: the agent actually LOADED + FOLLOWED the config through the compose --------------------------
-sent(){ local f="$REPO/$1" want="$2"; [ -f "$f" ] || return 2; [ "$(tr -d '[:space:]' < "$f")" = "$want" ] && return 0 || return 1; }
+sent(){ local f="$1/$2" want="$3"; [ -f "$f" ] || return 2; [ "$(tr -d '[:space:]' < "$f")" = "$want" ] && return 0 || return 1; }
 
 echo
 echo "== CLAUDE.md LOADS (headline, rides the box) — the agent produced the secret from its repo CLAUDE.md =="
-sent "SECRET.txt" "$SECRET"; r=$?
+sent "$REPO" "SECRET.txt" "$SECRET"; r=$?
 if   [ $r = 0 ]; then ok "SECRET.txt carries the exact per-run secret — the repo CLAUDE.md LOADED + was followed through the compose"
 elif [ $r = 2 ]; then wn "no SECRET.txt — live run not exercised (run spin.sh); the deterministic gates carry the loading-path proof"
 else                  no "SECRET.txt present but token mismatch — the agent did not get the secret from CLAUDE.md (clobbered/not loaded)"; fi
 
 echo
 echo "== SKILL LOADS (headline, rides the box) — the agent used its project greet skill =="
-sent "GREET.txt" "$GREET"; r=$?
+sent "$REPO" "GREET.txt" "$GREET"; r=$?
 if   [ $r = 0 ]; then ok "GREET.txt carries the exact per-run greet token — the project skill LOADED + fired through the compose"
 elif [ $r = 2 ]; then wn "no GREET.txt — live run not exercised (run spin.sh); deterministic gates carry the proof"
 else                  no "GREET.txt present but token mismatch — the greet skill was not actually invoked"; fi
+
+echo
+echo "== NEGATIVE CONTROL (headline, rides the box) — same kick, a repo with a DIFFERENT secret + NO skill =="
+echo "     [proves loading, not echo] the control agent must NOT emit the real tokens (it never saw them)."
+CTL="$SB/control"
+if [ ! -f "$REPO/SECRET.txt" ] && [ ! -f "$REPO/GREET.txt" ]; then
+  sk "negative control not exercised (no live run yet) — the box-free TOKEN-SOURCE gate carries the echo proof"
+elif [ -d "$CTL" ]; then
+  # The control must NOT produce the REAL secret. (It may write its OWN control secret — that's fine / expected.)
+  sent "$CTL" "SECRET.txt" "$SECRET"; r=$?
+  if   [ $r = 0 ]; then no "CONTROL emitted the REAL secret — the token leaked/echoed (not read from the repo CLAUDE.md)!"
+  elif [ $r = 2 ]; then ok "control produced no SECRET.txt with the real secret (it had no such secret) — real secret came from loading"
+  else                  ok "control SECRET.txt != the real secret ($([ -n "$CONTROL" ] && sent "$CTL" "SECRET.txt" "$CONTROL" && echo "it wrote its OWN control secret — proving it read its OWN CLAUDE.md" || echo "different value")) — no echo"; fi
+  # The control has NO greet skill, so it must NOT produce the real greet token.
+  sent "$CTL" "GREET.txt" "$GREET"; r=$?
+  if   [ $r = 0 ]; then no "CONTROL emitted the real greet token with NO greet skill — echo/leak, not skill-loading!"
+  else                  ok "control did not emit the real greet token (it has no greet skill) — the positive greet came from the loaded skill"; fi
+else
+  sk "no control repo — run setup-sandbox.sh + spin.sh; negative control not exercised (TOKEN-SOURCE gate carries the box-free echo proof)"
+fi
 
 echo
 echo "== ISOLATION (hard gate) — the compose leaked no session into the operator's global pty/convoy root =="

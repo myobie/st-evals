@@ -25,18 +25,23 @@ trap 'exit 143' TERM
 echo "== 1/4  convoy init the isolated network ($NET) =="
 stev_convoy_init "$NET"
 
-echo "== 2/4  compose persona (names no tokens) =="
-"$HERE/compose-persona.sh" "$SB"
+echo "== 2/4  compose personas (positive ccl + negative-control ccln; neither names any token) =="
+"$HERE/compose-persona.sh" "$SB" ccl  "$SB/repo"
+"$HERE/compose-persona.sh" "$SB" ccln "$SB/control"
 
-echo "== 3/4  convoy add ccl INTO the repo (auto; CLAUDE.md + project skill auto-load via --dir) =="
-convoy pretrust "$SB/repo" >/dev/null 2>&1 || true
-"$HERE/configure-claude-agent.sh" "$SB"
+echo "== 3/4  convoy add BOTH into their repos (auto). ccl -> real repo; ccln -> control repo (diff secret, no skill) =="
+convoy pretrust "$SB/repo" "$SB/control" >/dev/null 2>&1 || true
+"$HERE/configure-claude-agent.sh" "$SB" ccl  "$SB/repo"
+"$HERE/configure-claude-agent.sh" "$SB" ccln "$SB/control"
 
-echo "== 4/4  seed the check kick into ccl's inbox (delivered by the ding sidecar) =="
-mkdir -p "$NET/ccl/inbox"
-ms=$(( $(date +%s) * 1000 )); sfx="$(printf '%06x' "$(( (RANDOM << 8 ^ RANDOM) & 0xffffff ))")"
-sed -n '/^---$/,$p' "$HERE/kick.md" > "$NET/ccl/inbox/${ms}-${sfx}.md"
-echo "   kick seeded $NET/ccl/inbox/${ms}-${sfx}.md (names no tokens — the worker must load CLAUDE.md + the skill)"
+echo "== 4/4  seed the SAME kick into BOTH inboxes (only the repo config differs => proves loading, not echo) =="
+seed_kick(){ local who="$1"; mkdir -p "$NET/$who/inbox"
+  local ms=$(( $(date +%s) * 1000 )); local sfx="$(printf '%06x' "$(( (RANDOM << 8 ^ RANDOM) & 0xffffff ))")"
+  sed -n '/^---$/,$p' "$HERE/kick.md" > "$NET/$who/inbox/${ms}-${sfx}.md"
+  echo "   kick -> $NET/$who/inbox/${ms}-${sfx}.md"; }
+seed_kick ccl
+seed_kick ccln
+echo "   (kick names no tokens; ccl must load its CLAUDE.md + greet skill; ccln has neither the real secret nor the skill)"
 
 echo
 echo "SPUN (compose-config-load, isolated convoy net $NET). members:"; convoy ls "$NET" 2>/dev/null | grep -E 'ccl' || convoy ls "$NET" 2>/dev/null

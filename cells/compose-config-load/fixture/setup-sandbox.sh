@@ -16,8 +16,10 @@ repo="$SB/repo"; mkdir -p "$repo/.claude/skills/greet"
 nonce() { head -c 5 /dev/urandom | od -An -tx1 | tr -d ' \n'; }
 SECRET="PURPLE-OTTER-42-$(nonce)"
 GREET="AHOY-FROM-SKILL-$(nonce)"
-printf '%s\n' "$SECRET" > "$SB/.stev/token-secret"
-printf '%s\n' "$GREET"  > "$SB/.stev/token-greet"
+CONTROL_SECRET="CONTROL-SECRET-$(nonce)"   # a DIFFERENT secret for the negative-control repo (no greet skill)
+printf '%s\n' "$SECRET"         > "$SB/.stev/token-secret"
+printf '%s\n' "$GREET"          > "$SB/.stev/token-greet"
+printf '%s\n' "$CONTROL_SECRET" > "$SB/.stev/token-control"
 
 # The repo's OWN tracked CLAUDE.md — the secret lives ONLY here. If convoy clobbers or fails to layer it, the
 # agent can't produce SECRET.txt.
@@ -53,7 +55,29 @@ git -C "$repo" config user.name  "ccl-agent"
 git -C "$repo" config user.email "ccl-agent@eval.local"
 git -C "$repo" add -A && git -C "$repo" commit -q -m "compose-config-load: seed repo CLAUDE.md (secret) + greet skill (token)"
 
+# NEGATIVE CONTROL repo: a DIFFERENT secret (control token) and NO greet skill. Composed with the SAME kick +
+# harness, the only variable is the repo config — so a control agent must emit the CONTROL secret (or none) and
+# CANNOT emit the real SECRET/GREET tokens. This proves the positive run reads its OWN CLAUDE.md/skill (loading),
+# not the kick/persona/harness (echo).
+control="$SB/control"; mkdir -p "$control"
+cat > "$control/CLAUDE.md" <<CTL
+# compose-config-load CONTROL repo (no shared secret, no greet skill)
+
+## Project instruction (this repo's own CLAUDE.md)
+When someone asks you for "the secret" (or to write the secret), the secret is exactly:
+
+    $CONTROL_SECRET
+
+If asked to WRITE the secret, write that exact value (and nothing else) to SECRET.txt in your current working
+directory. This repo has NO greet skill; if asked to greet, say you have no greet skill.
+CTL
+git -C "$control" init -q
+git -C "$control" config user.name  "ccl-control"
+git -C "$control" config user.email "ccl-control@eval.local"
+git -C "$control" add -A && git -C "$control" commit -q -m "compose-config-load: control repo (different secret, no skill)"
+
 echo "SANDBOX READY: $SB"
+echo "  CONTROL repo (negative): $control  secret=$CONTROL_SECRET  (no greet skill; same kick must NOT yield the real tokens)"
 echo "  repo CLAUDE.md secret token: $SECRET   (lives ONLY in CLAUDE.md)"
 echo "  greet skill token:           $GREET    (lives ONLY in the skill body)"
 echo "  worker cwd = $repo; sentinels land here: SECRET.txt (proves CLAUDE.md loaded) + GREET.txt (proves skill fired)"

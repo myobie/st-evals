@@ -24,8 +24,10 @@ Whether an agent composed into a repo still LOADS + FOLLOWS that repo's own CLAU
     SECRET.txt = the secret from its repo CLAUDE.md (proves CLAUDE.md loaded + was followed), GREET.txt = the greet
     token via its project skill (proves the skill loaded + fired). Each token is per-run nonce'd and lives ONLY in
     its file body (never in the kick), so a sentinel bearing it is UNGAMEABLE — the agent had no other way to know
-    it. Mutation-valid: an agent that ignores its CLAUDE.md (no/ wrong SECRET.txt) or cannot see the skill
-    (no/wrong GREET.txt) FAILS the exact-token assertion.
+    it. Mutation-valid at BOTH layers: (file) a TOKEN-SOURCE check proves the token appears in no agent-visible
+    file except its source; (live) a NEGATIVE CONTROL — a repo with a DIFFERENT secret + NO skill, run with the
+    SAME kick — MUST NOT emit the real tokens, so a PASS proves the agent READ its own CLAUDE.md/skill (loading),
+    not that the token echoed in via the kick/persona/harness.
 """
 
 [setup]
@@ -41,10 +43,17 @@ fixture/grade.sh — REAL state, never a self-report. Hard gates:
   CLAUDE.local.md ADDITIVE (det)— convoy wrote CLAUDE.local.md (@-imports PERSONA/DING-BUS) that COEXISTS with the
                                   repo CLAUDE.md (layered, not replaced).
   CONFIG INTACT (det)           — secret still in CLAUDE.md + greet token still in SKILL.md, both still tracked.
+  TOKEN-SOURCE (det)            — the per-run secret appears in NO agent-visible file except CLAUDE.md, and the
+                                  greet token ONLY in SKILL.md (kick/persona/CLAUDE.local.md/PERSONA.md/DING-BUS.md/
+                                  settings all clean) — so a positive sentinel can ONLY be loading, never an echo.
   CLAUDE.md LOADS (live)        — SECRET.txt == the per-run secret (the repo CLAUDE.md loaded + was followed).
   SKILL LOADS (live)            — GREET.txt == the per-run greet token (the project skill loaded + fired).
-  ISOLATION                     — no ccl/cclp session in the operator's global pty/convoy root.
-The deterministic tier grades box-free (no LLM); the live headline rides the box (WARN if not exercised).
+  NEGATIVE CONTROL (live)       — a CONTROL repo (a DIFFERENT secret, NO greet skill) run with the SAME kick MUST
+                                  NOT emit the real tokens (it never saw them). Proves loading at the LIVE layer,
+                                  not just the file layer — a PASS cannot come from the token leaking via the kick.
+  ISOLATION                     — no ccl/ccln/cclp session in the operator's global pty/convoy root.
+The deterministic tier (incl. TOKEN-SOURCE) grades box-free (no LLM); the live headline + negative control ride
+the box (WARN/SKIP if not exercised — TOKEN-SOURCE carries the box-free echo proof in that case).
 """
 
 [integrity]
