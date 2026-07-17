@@ -5,13 +5,13 @@
 # sandbox and grades that they delegated + shipped a graded fix hands-off. HEAVY (real agents, real API, minutes),
 # so NOT part of the box-free probe/grade floor; run it explicitly. Writes $SB/.stev/canwork.log for grade.sh.
 #
-# HARD GATE = the ORG-PROOF CORE (straddle-INDEPENDENT): g1 + cos→sup + sup→wk + graded_fix.
-# ADVISORY (straddle-coupled, single-run — NOT gated): rc, the PASS-headline, and the restart-straddle. convoy
-# confirmed checkFullOrg returns ONE pass/fail for G1..G5, so rc + PASS-headline both FAIL on a straddle flake —
-# gating on them would make the eval flaky. Promote rc + headline + straddle to gates once convoy makes the
-# straddle deterministic.
+# HARD GATES = the ORG-PROOF CORE (g1 + cos→sup + sup→wk + graded_fix) + rc=0 + the PASS-headline + prod-untouched.
+# Post-#66 (restart-straddle = retry-then-advisory) the straddle no longer gates checkFullOrg, so rc + the
+# PASS-headline are DETERMINISTIC and are hard gates (a straddle flake no longer fails them).
+# ADVISORY (reported, NOT gated): ONLY the restart-straddle (retry-then-advisory) — promoted to a hard gate only if
+# convoy guarantees deterministic reconstruction.
 #
-# MARKERS: interim = the [full-org] PROSE lines. SWITCH to convoy's stable token line when its follow-up lands:
+# MARKERS: PREFER convoy's stable token line (convoy #65; records src=token), fall back to the [full-org] PROSE lines:
 #   [full-org] GATE g1=pass cos_sup=pass sup_wk=pass graded_fix=pass straddle=pass   (straddle: pass|fail|skip)
 # Scoped + torn down; never touches the live fleet.
 #   ./spin.sh [SANDBOX]

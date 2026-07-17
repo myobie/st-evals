@@ -22,14 +22,13 @@ Whether convoy's OWN end-to-end self-test, `convoy doctor --full`, proves the fu
 
 (a) CAN-WORK ORG-PROOF CORE (live, gated — fixture/spin.sh): on a well-formed net, `convoy doctor --full` runs a
     real CoS→supervisor→worker org in doctor's own sandbox. The HARD gate is the ORG-PROOF CORE — g1 (CoS hands-off
-    boot) + cos→sup + sup→wk + graded_fix — which is STRADDLE-INDEPENDENT. rc, the PASS-headline ("the full
-    autonomous org works on this machine ...") and the restart-continuity straddle (G4/G5) are ADVISORY, NOT gated:
-    convoy confirmed checkFullOrg returns ONE pass/fail for G1..G5, so a straddle flake fails the WHOLE check =>
-    rc=1 + the ✗ FAIL headline. The straddle is known-flaky in the hosted run (agent-re-engagement, not a code
-    bug), so gating on rc or the PASS-headline would make the eval flaky. They are promoted to hard gates once
-    convoy makes the straddle deterministic. Markers: the interim [full-org] prose lines, switching to convoy's
-    stable machine-readable token line ("[full-org] GATE g1=pass cos_sup=pass sup_wk=pass graded_fix=pass
-    straddle=pass") the moment convoy's follow-up lands — so the gate never chases prose.
+    boot) + cos→sup + sup→wk + graded_fix — PLUS rc=0 + the PASS-headline ("the full autonomous org works on this
+    machine ...") + prod-untouched. Post-#66 (restart-straddle = retry-then-advisory) the straddle no longer gates
+    checkFullOrg, so rc + the PASS-headline are DETERMINISTIC and are HARD gates (a straddle flake no longer fails
+    them). ONLY the restart-continuity straddle (G4/G5) is ADVISORY, NOT gated — promoted to a hard gate only if
+    convoy guarantees deterministic reconstruction. Markers: spin.sh reads convoy's stable machine-readable token
+    line ("[full-org] GATE g1=pass cos_sup=pass sup_wk=pass graded_fix=pass straddle=pass"; convoy #65, records
+    src=token) and falls back to the [full-org] prose lines only if it is absent — so the gate never chases prose.
 
 (b) PREFLIGHT FAILS-CLOSED (box-free — fixture/probe.sh): `convoy doctor --full --network <malformed>` exits rc=1
     via a preflight structure ✗ that short-circuits BEFORE the org proof spawns — proving doctor refuses a broken
@@ -57,9 +56,10 @@ fixture/grade.sh — REAL doctor stdout + exit code, never a self-report. Gates:
   PREFLIGHT-FAILS-CLOSED (hard, box-free) — doctor --full --network <malformed>: rc=1 + a preflight structure ✗ +
                      NO can-work headline (org proof short-circuited). A PREFLIGHT negative (labeled), not a grader negative.
   CAN-WORK-CORE (hard when exercised via spin.sh; skip-with-reason otherwise) — the ORG-PROOF CORE g1 (CoS
-                     hands-off boot) + cos→sup + sup→wk + graded_fix (straddle-INDEPENDENT). This is the stable gate.
-  ADVISORY (reported, NEVER gated — straddle-coupled/single-run) — rc + the PASS-headline + the restart-continuity
-                     straddle. Promoted to hard gates once convoy makes the straddle deterministic.
+                     hands-off boot) + cos→sup + sup→wk + graded_fix, PLUS rc=0 + the PASS-headline + prod-untouched.
+                     Post-#66 (retry-then-advisory straddle) rc + the PASS-headline are DETERMINISTIC = hard gates.
+  ADVISORY (reported, NEVER gated) — ONLY the restart-continuity straddle. Promoted to a hard gate only if convoy
+                     guarantees deterministic reconstruction.
   ISOLATION (hard) — no doctor session in the operator's global pty root (--network scoped it to the sandbox).
 """
 
