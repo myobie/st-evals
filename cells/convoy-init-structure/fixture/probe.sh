@@ -36,6 +36,12 @@ convoy init "$NET" > "$P/init.out" 2>&1; echo "   init rc=$? (path used as-is =>
 XDG="$SB/xdg"; mkdir -p "$XDG"
 XDG_STATE_HOME="$XDG" convoy init nettest >> "$P/init.out" 2>&1
 NAMED="$XDG/convoy/nettest"
+# Bare DEFAULT: `convoy init` with no arg = resolveNetworkRoot(null) = ST_ROOT ?? <state-home>/convoy/default. We
+# UNSET ST_ROOT (env -u) so the default is honored (an ambient ST_ROOT wins by design — convoy-claude), and redirect
+# the state home so we never touch the operator's real ~/.local/state/convoy.
+XDG2="$SB/xdg2"; mkdir -p "$XDG2"
+env -u ST_ROOT XDG_STATE_HOME="$XDG2" convoy init >> "$P/init.out" 2>&1
+DEFAULT_NET="$XDG2/convoy/default"
 
 echo "== capture the on-disk shape convoy init produced =="
 # Full tree (2 levels) for the human + the grader's context.
@@ -45,7 +51,8 @@ echo "== capture the on-disk shape convoy init produced =="
   for d in smalltalk pty worktrees; do
     [ -d "$NET/$d" ] && echo "has_$d=yes" || echo "has_$d=no"
   done
-  # NAMED NETWORKS (#2): a bare name -> <state-home>/convoy/<name>/ ; a path -> used as-is.
+  # NAMED NETWORKS (#2): bare default -> <state>/convoy/default/ ; a bare name -> <state>/convoy/<name>/ ; a path -> as-is.
+  [ -d "$DEFAULT_NET" ] && echo "default_net=yes" || echo "default_net=no"
   [ -d "$NAMED" ] && echo "named_net=yes" || echo "named_net=no"
   [ -d "$NET" ] && echo "path_as_is=yes" || echo "path_as_is=no"
   # config recorded: some network-config artifact exists (exact filename TBD w/ convoy-claude — accept a few).
@@ -59,6 +66,7 @@ sed 's/^/     /' "$P/shape.txt"
 echo "== teardown the isolated nets =="
 stev_convoy_teardown "$NET" >/dev/null 2>&1 || true
 stev_convoy_teardown "$NAMED" >/dev/null 2>&1 || true
+stev_convoy_teardown "$DEFAULT_NET" >/dev/null 2>&1 || true
 
 echo "== probe artifacts in $P/ =="; ls -1 "$P" | sed 's/^/     /'
 echo "GRADE:  $HERE/grade.sh \"$SB\""
