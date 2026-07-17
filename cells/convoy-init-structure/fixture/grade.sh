@@ -37,7 +37,7 @@ grep -q '^path_as_is=yes' "$P/shape.txt" && ok "an explicit PATH is used as-is" 
 echo "== CONFIG RECORDED (hard gate) — init recorded the network config =="
 cfg="$(sed -n 's/^config_recorded=//p' "$P/shape.txt")"
 [ -n "$cfg" ] && [ "$cfg" != "no" ] && ok "network config recorded ($cfg)" \
-                                    || no "no recorded network config — add/up/doctor cannot stay consistent (exact filename TBD w/ convoy-claude)"
+                                    || no "no recorded network config — written by a LATER piece (#4 worktree/megarepo + #5 interactive init), NOT #3; expected RED until #4/#5 land (per convoy-claude)"
 
 echo "== MUTATION-VALID (hard gate) — the presence check is non-vacuous =="
 grep -q '^selftest_bogus_absent=yes' "$P/shape.txt" && ok "a bogus subdir reads ABSENT — the structure check genuinely tests presence (not always-pass)" \

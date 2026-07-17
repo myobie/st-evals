@@ -39,7 +39,11 @@ if g "busdir=yes"; then
   ok "bus folder <net>/smalltalk/<host>.<identity>/ exists (smalltalk/ split + host-prefix)"
   g "host_parseable=yes" && ok "  host is parseable from the folder-name prefix (<host>.<identity>, doc 4aab4f1)" \
                          || no "  host NOT parseable from the bus-folder name (prefix missing)"
-  for s in inbox archive status; do g "bus_has_$s=yes" && ok "  bus folder has $s" || no "  bus folder MISSING $s"; done
+  # inbox/ + archive/ are convoy-add-created (deterministic) => hard-gate. The `status` file is RUNTIME/agent-created
+  # (the agent's boot ritual runs `st status --set`; a missing one reads as offline) => NOT a structure gate.
+  for s in inbox archive; do g "bus_has_$s=yes" && ok "  bus folder has $s" || no "  bus folder MISSING $s"; done
+  g "bus_has_status=yes" && echo "  [info] status file present (an agent already set it)" \
+                         || echo "  [info] no status file yet — RUNTIME/agent-created on boot (st status --set), NOT gated (a missing status reads as offline, per convoy-claude)"
 else
   no "bus folder <net>/smalltalk/<shorthost>.<identity>/ MISSING — smalltalk/ split + host-prefix not landed (current convoy = flat <net>/<identity>)"
 fi
