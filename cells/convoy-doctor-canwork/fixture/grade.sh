@@ -5,10 +5,11 @@
 # hands-off). Never a self-report — grades doctor's real stderr markers + exit code. Two layers:
 #   BOX-FREE FLOOR (probe.sh): doctor --full FAILS-CLOSED on a bad preflight (rc=1 short-circuit) — a PREFLIGHT
 #     negative (honestly labeled: proves the preflight gate, NOT the org grader).
-#   LIVE HEADLINE (spin.sh, gated): the ORG-PROOF CORE — g1 + cos→sup + sup→wk + graded_fix — is the HARD gate
-#     (straddle-INDEPENDENT). rc + the PASS-headline + the restart-straddle are ADVISORY (straddle-coupled,
-#     single-run: convoy confirmed checkFullOrg is ONE pass/fail for G1..G5, so rc + PASS-headline both fail on a
-#     straddle flake — gating on them would make the eval flaky). Promote them once convoy makes the straddle deterministic.
+#   LIVE HEADLINE (spin.sh, gated): the HARD gates are the ORG-PROOF CORE (g1 + cos→sup + sup→wk + graded_fix) + rc=0
+#     + the PASS-headline + prod-untouched. Post-#66 (restart-straddle = retry-then-advisory) the straddle no longer
+#     gates checkFullOrg, so rc + the PASS-headline are DETERMINISTIC (a straddle flake no longer fails them) and are
+#     hard gates. ONLY the restart-straddle is ADVISORY (retry-then-advisory; reported, never gated) — it is
+#     promoted to a hard gate only if convoy makes deterministic reconstruction guaranteed.
 #   ./grade.sh [SANDBOX]
 # ─────────────────────────────────────────────────────────────────────────────
 set -uo pipefail

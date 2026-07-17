@@ -19,13 +19,13 @@ sender-robustness bugs (convoy #64) both broke the CoS/delegation boot.
 
 - **CAN-WORK ORG-PROOF CORE (live, gated — `fixture/spin.sh`):** on a well-formed net, `convoy doctor --full` runs
   the real CoS→sup→worker org. The **hard gate** is the **org-proof core** — `g1` (CoS hands-off boot) + `cos→sup`
-  + `sup→wk` + `graded_fix` — which is **straddle-independent**. `rc`, the PASS-**headline** ("the full autonomous
-  org works on this machine …") and the restart **straddle** (G4/G5) are **ADVISORY, not gated**: convoy confirmed
-  `checkFullOrg` returns **one** pass/fail for G1..G5, so a straddle flake fails the whole check → `rc=1` + the ✗
-  FAIL headline. The straddle is known-flaky in the hosted run (agent re-engagement, not a code bug), so gating on
-  `rc` or the headline would make the eval flaky. They're promoted to hard gates once convoy makes the straddle
-  deterministic. Markers: interim `[full-org]` prose, switching to convoy's stable token line
-  (`[full-org] GATE g1=pass cos_sup=pass sup_wk=pass graded_fix=pass straddle=pass`) when its follow-up lands.
+  + `sup→wk` + `graded_fix` — **plus** `rc=0` + the PASS-**headline** ("the full autonomous org works on this
+  machine …") + prod-untouched. Post-#66 (restart-straddle = retry-then-advisory) the straddle no longer gates
+  `checkFullOrg`, so `rc` + the PASS-headline are **deterministic** and are **hard gates** (a straddle flake no
+  longer fails them). **Only** the restart **straddle** (G4/G5) is **advisory** — promoted to a hard gate only if
+  convoy guarantees deterministic reconstruction. Markers: `spin.sh` reads convoy's stable token line
+  (`[full-org] GATE g1=pass cos_sup=pass sup_wk=pass graded_fix=pass straddle=pass`; records `src=token`) and falls
+  back to the `[full-org]` prose only if absent.
 - **PREFLIGHT FAILS-CLOSED (box-free — `fixture/probe.sh`):** `convoy doctor --full --network <malformed>` exits
   **`rc=1`** via a preflight structure ✗ that short-circuits **before** the org proof spawns. Labeled precisely: a
   **PREFLIGHT** negative, **not** proof the org grader catches a bad fix.
