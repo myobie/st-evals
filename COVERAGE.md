@@ -18,7 +18,7 @@ thin on its direct verb surface. Two convoy gaps are tracked below.
 | `up` — hosting + respawn | convoy-network (capstone), crash-ding | ✅ |
 | worktree / megarepo | convoy-worktree-cutting, weird-git-setup | ✅ |
 | `reload` (restore path) | restorability, restorability-codex | ✅ |
-| **job-lifecycle** (submit / run / status / complete) | convoy-job-lifecycle | 🔨 building (extends to the one-shot-agent job type) |
+| **job-lifecycle** (submit / run / status / complete) | convoy-job-lifecycle | ⏳ deferred — convoy has no job subsystem yet (waits on the one-shot-agent job type) |
 | `down` | indirect via convoy-doctor-teardown's abort trap | ⚠️ thin (no direct convoy-down cell) |
 
 ## ST (bus) — capabilities under test
@@ -42,19 +42,17 @@ thin on its direct verb surface. Two convoy gaps are tracked below.
 | session resume (pinned `--resume`) | resumability | ✅ |
 | session death detection | crash-ding, convoy-doctor-teardown | ✅ |
 | per-network `PTY_ROOT` isolation | two-networks-coexist | ✅ |
-| **peek / send / write** (inspect live output / inject input) | tui-build consumes `pty peek` as content; two-networks refuses cross-net peek/send | ⚠️ not positively graded |
+| **peek / send** (inspect live output / inject input) | pty-send-peek (positive round-trip) | ✅ (also: tui-build consumes `pty peek`, two-networks refuses cross-net peek/send) |
 
 ## Open gaps
 
-1. **convoy job-lifecycle — HIGH, 🔨 building (`convoy-job-lifecycle`).** Zero cells touch `convoy job`
-   (submit → run → status → complete). Built to extend to the incoming one-shot-agent job type.
-2. **pty peek / send / write — MEDIUM.** Exercised only as plumbing (tui-build reads `pty peek` for content)
-   or as an isolation-negative (two-networks asserts cross-network peek/send is refused). No cell asserts
-   "peek returns the session's real output" or "send injects input the session acts on" as a positive
-   capability. A `pty peek`/`pty send` round-trip cell would close it.
-4. **convoy `down` lifecycle — LOW/MED.** Only covered incidentally via doctor-teardown's abort path; no
+1. **convoy job-lifecycle — HIGH, ⏳ DEFERRED (`convoy-job-lifecycle`).** convoy has no job subsystem yet —
+   no `convoy job` command, no one-shot-agent job type. Nathan wants a NEW one-shot-agent job type, a separate
+   convoy build queued after stable main; the cell waits on that surface existing (built against the real
+   contract, not a guess).
+2. **convoy `down` lifecycle — LOW/MED.** Only covered incidentally via doctor-teardown's abort path; no
    direct "convoy down cleanly stops + reaps a running network" cell.
-5. **st `resource` + status/agents discovery — LOW.** Thin/plumbing-only; no dedicated subject cell.
+3. **st `resource` + status/agents discovery — LOW.** Thin/plumbing-only; no dedicated subject cell.
 
 ## Coverage math (subject-under-test)
 
