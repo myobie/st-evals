@@ -17,6 +17,8 @@ SB="${1:-${EVAL_SANDBOX:-./.sandbox}/license-mixed}"
 NET="$SB/st-root"                                   # SELF-ISOLATED convoy network (never the live one)
 export ST_ROOT="$NET"                               # bus root; convoy places sessions under $NET/pty
 SUP_ID="${SUP_ID:-mix-sup}"; WORKER_ID="${WORKER_ID:-mix-worker}"
+# configure-claude-agent.sh runs as a separate process and reads these under `set -u` — must be EXPORTED.
+export SUP_ID WORKER_ID
 
 [ -d "$SB/worker" ] || { echo "== sandbox absent — materializing =="; "$HERE/setup-sandbox.sh" "$SB"; }
 
