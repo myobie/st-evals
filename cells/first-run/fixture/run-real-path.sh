@@ -42,7 +42,7 @@ pass() { printf '  ✓ PASS: %s\n' "$1"; }
 fail() { printf '  ✗ FAIL: %s\n' "$1"; GATE_FAIL=1; }
 GATE_FAIL=0
 
-BIN=""; for cand in st smalltalk coord; do command -v "$cand" >/dev/null 2>&1 && { BIN="$cand"; break; }; done
+BIN=""; for cand in st smalltalk; do command -v "$cand" >/dev/null 2>&1 && { BIN="$cand"; break; }; done
 [ -z "$BIN" ] && { echo "no smalltalk CLI on PATH"; exit 1; }
 c() { local who="$1"; shift; env ST_ROOT="$STR" ST_AGENT="$who" "$BIN" "$@"; }
 

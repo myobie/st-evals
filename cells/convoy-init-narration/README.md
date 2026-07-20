@@ -3,7 +3,7 @@
 **Discriminates:** does `convoy init` **tell the user what's happening, step by step** (default), stay **silent
 under `--quiet`**, and emit a **one-line `--json` summary**? (deterministic, held-out)
 
-**Capabilities required:** `convoy,st,pty,git` · run `bin/st-evals preflight`. No LLM — real command, grep the output.
+**Capabilities required:** `convoy,st,pty,git` · run `bin/evals preflight`. No LLM — real command, grep the output.
 
 ## What it proves (Nathan ask)
 
@@ -25,7 +25,7 @@ work for scripts and evals. It's a **light presence check**, not an LLM judge of
 
 ## Run it
 
-`fixture/probe.sh <SB>` then `fixture/grade.sh <SB>`, or `bin/st-evals run convoy-init-narration`. Greenfield-safe;
+`fixture/probe.sh <SB>` then `fixture/grade.sh <SB>`, or `bin/evals run convoy-init-narration`. Greenfield-safe;
 isolated paths; zero-orphan teardown.
 
 See `task.toml` for the full spec. Complements

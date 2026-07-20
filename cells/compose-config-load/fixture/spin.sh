@@ -48,4 +48,4 @@ echo "SPUN (compose-config-load, isolated convoy net $NET). members:"; convoy ls
 echo "OBSERVE (ST_ROOT=$NET): ccl boots -> writes SECRET.txt (secret from its repo CLAUDE.md, loaded through the"
 echo "  compose) + GREET.txt (via its greet skill). A sentinel with the right token PROVES that config loaded."
 echo "GRADE after it settles:  $HERE/grade.sh \"$SB\"   (run probe.sh too for the box-free deterministic gates)"
-echo "TEARDOWN after grading:  bin/st-evals teardown \"$SB\"   (or: convoy down \"$NET\" --force; rm -rf \"$SB\")"
+echo "TEARDOWN after grading:  bin/evals teardown \"$SB\"   (or: convoy down \"$NET\" --force; rm -rf \"$SB\")"

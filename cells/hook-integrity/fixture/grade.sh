@@ -65,7 +65,7 @@ else
     echo "  HOOK_OK.txt. On this machine, Claude Code launched WITHOUT running your SessionStart hook."
     echo "  Check:  1) .claude/settings.local.json exists in the launched repo and has a SessionStart"
     echo "             hook entry;  2) the hook command/path resolves + is executable;  3) the launched"
-    echo "             session transcript shows a <context source=\"coord/context/now.md\"> block."
+    echo "             session transcript shows a <context source=\"st/context/now.md\"> block."
   fi
   if $off_leak; then
     echo "  ${B}Negative control LEAKED${X}: the token appeared even with --no-hooks. The check is not"

@@ -2,7 +2,7 @@
 
 **Discriminates:** can a stood-up chief-of-staff stand up a *working* specialist that takes a real delegated task end-to-end? — delegate → execute-in-its-own-repo → report → the CoS walks it read-only and confirms. Onboarding proves the manager; this proves the manager can build a team.
 
-**Capabilities required:** `claude,st,pty,git,node`  ·  run `bin/st-evals preflight` to confirm your setup supports this cell.
+**Capabilities required:** `claude,st,pty,git,node`  ·  run `bin/evals preflight` to confirm your setup supports this cell.
 
 ## Run it
 
@@ -15,8 +15,8 @@ st-launched CoS (and the worker it stands up) inherit that root by env inheritan
 startup gates). No external `ST_ROOT` — spin owns the isolated root.
 
 - `fixture/gate-p4.sh [SANDBOX]` — **P4**, the standup *mechanics*, hermetic + offline (exit 0 = PASS): `st launch --dry-run` writes the child's identity + wires the boot hook; the CoS records the specialist in `team.md`.
-- `fixture/spin.sh [SANDBOX]` — **P5**, the LIVE proof: `st launch`es the CoS (`--unattended`, collision-proof stev session name so it can't clobber a live `cos`); the CoS reads the seeded task, **stands up `taskflow-dev` itself** via `st launch`, briefs it over the bus, and walks the result. Or: `bin/st-evals run team-standup`.
-- `fixture/grade.sh [SANDBOX]` — ground-truth grade once the loop closes. Tear down after with `bin/st-evals teardown <SANDBOX>`.
+- `fixture/spin.sh [SANDBOX]` — **P5**, the LIVE proof: `st launch`es the CoS (`--unattended`, collision-proof stev session name so it can't clobber a live `cos`); the CoS reads the seeded task, **stands up `taskflow-dev` itself** via `st launch`, briefs it over the bus, and walks the result. Or: `bin/evals run team-standup`.
+- `fixture/grade.sh [SANDBOX]` — ground-truth grade once the loop closes. Tear down after with `bin/evals teardown <SANDBOX>`.
 
 `st launch --unattended` auto-dismisses the CoS's startup gates (dev-channels / folder-trust / MCP-enable). The specialist the CoS stands up gets its folder-trust + project-MCP pre-staged by `spin.sh` (st launch installs its persona + boot hooks). asyncRewake carries the wakes; poke by hand only if an agent idles on a delivered message (the pty session name differs from the smalltalk identity — see the notes `spin.sh` prints).
 

@@ -46,12 +46,12 @@ while read -r sha; do
 done < <(git -C "$W" rev-list "$BASE"..HEAD 2>/dev/null)
 [ "$lane_ok" -eq 1 ] && ok "every commit stayed in its author's lane (tui-ux authored none)"
 
-echo "== SUITE GREEN (hard gate — needs @myobie/pty from npm) =="
+echo "== SUITE GREEN (hard gate — needs @compoundingtech/pty from npm) =="
 if ( cd "$W" && npm install --silent >/dev/null 2>&1 ); then
   ( cd "$W" && npm test >/dev/null 2>&1 ) && ok "npm test GREEN on integrated main" || no "npm test RED on main"
   ( cd "$W" && npm run typecheck >/dev/null 2>&1 ) && ok "tsc --noEmit GREEN" || wn "typecheck not green (or no typecheck script)"
 else
-  wn "npm install failed (no network / @myobie/pty unavailable) — run the SUITE + RENDER checks by hand"
+  wn "npm install failed (no network / @compoundingtech/pty unavailable) — run the SUITE + RENDER checks by hand"
 fi
 
 echo "== WIRED TO THE REAL DATA LAYER (hard — both views read network.ts, not just the mock) =="
@@ -80,5 +80,5 @@ echo "SCORE (mechanical): $pass PASS / $fail FAIL / $warn WARN"
                    || echo "==> $fail HARD FAILURE(S) — see [FAIL] rows."
 [ "$fail" -eq 0 ]
 
-# stev/demo: archive the built TUI + seed candidates to a grabbable path (folder-generic, coord-free).
+# stev/demo: archive the built TUI + seed candidates to a grabbable path (folder-generic, tool-agnostic).
 "$(dirname "$0")/copy-artifact.sh" "$SB" >/dev/null 2>&1 || true

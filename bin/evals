@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-# st-evals — run isolation-gated, held-out-graded agent-team evals on your own
+# evals — run isolation-gated, held-out-graded agent-team evals on your own
 # network. One instruction seeds a team; the team self-organizes; a held-out check
 # grades the result so it can't be gamed by editing a unit test.
 #
-#   st-evals preflight        # what you have installed → which cells you can run
-#   st-evals readiness        # first-boot smoke: bus works, agents spawn, msgs round-trip
-#   st-evals list             # the cell catalogue (type · ship/flag · caps)
-#   st-evals run <cell>       # run one cell (ensures the pinned personas first)
-#   st-evals teardown <SB>    # pty kill+rm every session a run left behind + neuter pty.toml
+#   evals preflight        # what you have installed → which cells you can run
+#   evals readiness        # first-boot smoke: bus works, agents spawn, msgs round-trip
+#   evals list             # the cell catalogue (type · ship/flag · caps)
+#   evals run <cell>       # run one cell (ensures the pinned personas first)
+#   evals teardown <SB>    # pty kill+rm every session a run left behind + neuter pty.toml
 #
 # Env a cell may need (documented per cell): ST_ROOT (a scratch network root),
 # ST_HOOKS_DIR (<smalltalk>/examples/claude-code/hooks), PERSONAS_DIR (auto via
@@ -27,7 +27,7 @@ case "$cmd" in
   readiness) exec "$HERE/readiness.sh" "$@" ;;
 
   teardown)
-    sb="${1:-}"; [ -n "$sb" ] || { echo "usage: st-evals teardown <sandbox-dir>" >&2; exit 2; }
+    sb="${1:-}"; [ -n "$sb" ] || { echo "usage: evals teardown <sandbox-dir>" >&2; exit 2; }
     # shellcheck source=/dev/null
     . "$HERE/lib-harness.sh"; stev_teardown "$sb" ;;
 
@@ -39,20 +39,20 @@ case "$cmd" in
     ;;
 
   run)
-    # Whole-suite ding toggle: `st-evals run <cell> --ding` (or ST_EVAL_DING=1)
+    # Whole-suite ding toggle: `evals run <cell> --ding` (or EVAL_DING=1)
     # runs the cell in the no-MCP ding shape — every launcher consults stev_ding_flags.
     # Strip --ding from the args so it never reaches the cell's entry script.
     args=(); for a in "$@"; do
-      if [ "$a" = "--ding" ]; then export ST_EVAL_DING=1; else args+=("$a"); fi
+      if [ "$a" = "--ding" ]; then export EVAL_DING=1; else args+=("$a"); fi
     done
     set -- "${args[@]:-}"
-    cell="${1:-}"; [ -n "$cell" ] || { echo "usage: st-evals run <cell> [--ding]" >&2; exit 2; }
+    cell="${1:-}"; [ -n "$cell" ] || { echo "usage: evals run <cell> [--ding]" >&2; exit 2; }
     dir="$ROOT/cells/$cell"
-    [ -d "$dir" ] || { echo "no such cell: $cell (try: st-evals list)" >&2; exit 2; }
+    [ -d "$dir" ] || { echo "no such cell: $cell (try: evals list)" >&2; exit 2; }
 
     # gate on capabilities before doing anything
     if ! "$HERE/preflight.sh" --runnable | grep -qx "$cell"; then
-      echo "cell '$cell' is not runnable with your installed tools. Run: st-evals preflight" >&2
+      echo "cell '$cell' is not runnable with your installed tools. Run: evals preflight" >&2
       exit 1
     fi
 

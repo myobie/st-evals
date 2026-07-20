@@ -3,7 +3,7 @@
 **Discriminates:** after a convoy agent is composed into a repo, does that repo's **own CLAUDE.md** (loaded through
 convoy's additive `CLAUDE.local.md` layering, not clobbered) and its **project skills** still load and work? (held-out)
 
-**Capabilities required:** `convoy,st,pty,git` (+ `claude` for the live headline) · run `bin/st-evals preflight`.
+**Capabilities required:** `convoy,st,pty,git` (+ `claude` for the live headline) · run `bin/evals preflight`.
 
 ## What it proves (Nathan's mandate)
 
@@ -34,7 +34,7 @@ compose and the agent actually follows it.
 ## Run it
 
 Deterministic (no box): `fixture/probe.sh <SB>` then `fixture/grade.sh <SB>`. Full live run: `fixture/spin.sh`, or
-`bin/st-evals run compose-config-load`. Self-isolating (isolated convoy net + decoupled short `PTY_ROOT`);
+`bin/evals run compose-config-load`. Self-isolating (isolated convoy net + decoupled short `PTY_ROOT`);
 zero-orphan teardown. Needs `PERSONAS_DIR` (runner-set).
 
 ## Grading

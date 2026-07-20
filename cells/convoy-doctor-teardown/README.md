@@ -4,7 +4,7 @@
 does it run its finally-teardown and **reap its whole CoS→sup→worker org** (agents + ding sidecars) before exit — or
 does the killed signal skip the teardown and **leak the org** into a now-deleted sandbox? (held-out; no LLM)
 
-**Capabilities required:** `claude,convoy,st,pty,git` · run `bin/st-evals preflight`. Live/gated (heavy: a real org).
+**Capabilities required:** `claude,convoy,st,pty,git` · run `bin/evals preflight`. Live/gated (heavy: a real org).
 
 ## What it proves (guards convoy #67)
 

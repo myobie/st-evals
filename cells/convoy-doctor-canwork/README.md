@@ -4,7 +4,7 @@
 CoS→supervisor→worker that **delegated + shipped a graded fix, hands-off** — and **fail closed** on a broken setup?
 (held-out; no LLM judge — grades doctor's real stdout + exit code)
 
-**Capabilities required:** `claude,convoy,st,pty,git` · run `bin/st-evals preflight`. The preflight-fails-closed floor
+**Capabilities required:** `claude,convoy,st,pty,git` · run `bin/evals preflight`. The preflight-fails-closed floor
 is box-free; the can-work headline rides the box (heavy, gated).
 
 ## What it proves (the README promise — "and can do real work")

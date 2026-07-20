@@ -3,7 +3,7 @@
 **Discriminates:** does `convoy add --dir <repo>` compose an agent into an existing git repo **without polluting
 its working tree** — `git status --porcelain` stays EMPTY? (deterministic, held-out)
 
-**Capabilities required:** `convoy,st,pty,git` · run `bin/st-evals preflight` to confirm. No LLM — this cell
+**Capabilities required:** `convoy,st,pty,git` · run `bin/evals preflight` to confirm. No LLM — this cell
 grades which files convoy wrote, not any agent behavior.
 
 ## What it proves (Nathan's mandate)
@@ -32,7 +32,7 @@ convoy-authored file stops self-excluding — the exact regression class #53 fix
 
 ## Run it
 
-`fixture/probe.sh <SB>` then `fixture/grade.sh <SB>`, or `bin/st-evals run clean-compose`. Self-isolating +
+`fixture/probe.sh <SB>` then `fixture/grade.sh <SB>`, or `bin/evals run clean-compose`. Self-isolating +
 zero-orphan teardown; nothing touches the live convoy.
 
 ## Grading

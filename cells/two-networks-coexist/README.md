@@ -45,7 +45,7 @@ proving the partition isn't the trivial "two dead networks" pass. **Isolation is
 ## Run it
 
 ```sh
-bin/st-evals run two-networks-coexist   # (once wired) two-roots spinner → probe battery → grade
+bin/evals run two-networks-coexist   # (once wired) two-roots spinner → probe battery → grade
 ```
 
 Caps: `st,pty,git,node` (+`claude` only for the live build). Spec: `task.toml`. Design:

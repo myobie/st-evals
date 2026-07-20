@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-# st-evals preflight — detect what's installed, report which cells you can run.
+# evals preflight — detect what's installed, report which cells you can run.
 #
 # The preflight rule: detect what a person has installed and that determines
 # which cells they can run. A cell runs only if EVERY capability it needs is
@@ -13,7 +13,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 set -uo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-MANIFEST="${ST_EVALS_MANIFEST:-$HERE/../cells.manifest}"
+MANIFEST="${EVALS_MANIFEST:-$HERE/../cells.manifest}"
 MODE="${1:-table}"
 
 # whitespace trim that (unlike xargs) is safe on apostrophes/quotes in the manifest
@@ -21,7 +21,7 @@ trim() { local s="$1"; s="${s#"${s%%[![:space:]]*}"}"; s="${s%"${s##*[![:space:]
 
 # ── capability detection ──────────────────────────────────────────────────────
 have() { command -v "$1" >/dev/null 2>&1; }
-have_st()   { have st || have smalltalk || have coord; }
+have_st()   { have st || have smalltalk; }
 have_glm()  { have ollama && ollama list 2>/dev/null | grep -qiE 'glm'; }
 
 declare -A CAP
@@ -65,7 +65,7 @@ case "$MODE" in
     for s in "${skipped[@]}"; do [ $first = 1 ] || printf ','; first=0; printf '"%s"' "${s%%:*}"; done
     printf ']}\n';;
   *)
-    echo "st-evals preflight — installed capabilities"
+    echo "evals preflight — installed capabilities"
     for k in claude codex glm st pty git node gh; do
       printf '  %-7s %s\n' "$k" "$( [ "${CAP[$k]}" = 1 ] && echo '✓' || echo '—' )"
     done

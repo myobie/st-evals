@@ -43,11 +43,11 @@ c() { local who="$1"; shift; env ST_ROOT="$STR" ST_AGENT="$who" "$BIN" "$@"; }
 # ── Gate 0 (pre-flight): which binary does a newcomer actually have? ──────────
 gate "0 — binary on PATH"
 BIN=""
-for cand in st smalltalk coord; do
+for cand in st smalltalk; do
   if command -v "$cand" >/dev/null 2>&1; then BIN="$cand"; break; fi
 done
 if [ -z "$BIN" ]; then
-  fail "no smalltalk CLI on PATH (looked for: st, smalltalk, coord)"
+  fail "no smalltalk CLI on PATH (looked for: st, smalltalk)"
   echo "the docs say 'st'; nothing is installed. Cannot proceed."; exit 1
 fi
 printf '  binary found: %s  (%s)\n' "$BIN" "$(command -v "$BIN")"
@@ -80,7 +80,7 @@ else
   fi
 fi
 # no network-init command exists
-note "no \`$BIN init-network\` / \`$BIN onboard-agent\` command: 'init a fresh network' = set ST_ROOT + hand-mkdir each agent's {inbox,archive}. The newcomer must know the folder convention by hand. (agent-onboarding.md's own 'Forward-looking: coord onboard-agent' section proposes exactly this — still unbuilt.)"
+note "no \`$BIN init-network\` / \`$BIN onboard-agent\` command: 'init a fresh network' = set ST_ROOT + hand-mkdir each agent's {inbox,archive}. The newcomer must know the folder convention by hand. (agent-onboarding.md's own 'Forward-looking: st onboard-agent' section proposes exactly this — still unbuilt.)"
 # verify CoS is visible + available
 if c cos agents --json --enrich 2>/dev/null | grep -q '"identity":"cos".*"status":"available"'; then
   pass "CoS visible in \`agents\` as available"
@@ -148,7 +148,7 @@ if [ -n "$GOT" ] && c "$SPEC" message read --json "$GOT" 2>/dev/null | grep -qE 
 else
   fail "CoS -> $SPEC message not delivered/read"
 fi
-# HB-3 KILL-TEST (re-targeted post-coord-kill — ST_AGENT is now the identity var, so a LEAKED PARENT ST_AGENT is
+# HB-3 KILL-TEST (re-targeted post-rename — ST_AGENT is now the identity var, so a LEAKED PARENT ST_AGENT is
 # the risk surface: a host/CoS standing up a child must not let its own ST_AGENT become the child's). Leak a WRONG
 # parent identity (ST_AGENT=cos) into the child's send while the child names itself explicitly (--from $SPEC,
 # mirroring the explicit ST_AGENT st launch bakes into the child's pty.toml, Gate C). If the child's OWN identity

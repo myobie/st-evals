@@ -12,7 +12,7 @@
 #   export PTY_ROOT="$(stev_pty_root "$SB")"      # every session lands here
 #   stev_arm_teardown "$SB"                       # crash / Ctrl-C safety
 #
-# THE PROBLEM this solves: the coord BUS is isolated per run (ST_ROOT), but the
+# THE PROBLEM this solves: the smalltalk BUS is isolated per run (ST_ROOT), but the
 # pty session namespace is otherwise GLOBAL — shared with the operator's live
 # agents. A cell that named its sessions with a bare id could orphan sessions in
 # the operator's `pty ls` or CLOBBER a live session via a name collision.
@@ -80,11 +80,11 @@ stev_pty_root() { cat "$1/.stev/pty-root" 2>/dev/null; }
 #
 # The `st ding` sidecar the launch adds (`<id>-ding`) inherits the run's exported
 # PTY_ROOT, so the root sweep tears it down — no per-session registration needed.
-# Turn it on with `st-evals run <cell> --ding` or `ST_EVAL_DING=1`.
+# Turn it on with `evals run <cell> --ding` or `EVAL_DING=1`.
 
 # stev_ding_on : true (rc 0) iff ding-mode is enabled for this run.
 stev_ding_on() {
-  case "${ST_EVAL_DING:-}" in
+  case "${EVAL_DING:-}" in
     1|true|TRUE|yes|YES|on|ON) return 0 ;;
     *) return 1 ;;
   esac
@@ -200,6 +200,6 @@ _stev_on_exit() {
     stev_teardown "$sb"
   else
     echo "== stev: sessions up in PTY_ROOT '$(stev_pty_root "$sb")'. After grading, tear down with:" >&2
-    echo "     bin/st-evals teardown \"$sb\"" >&2
+    echo "     bin/evals teardown \"$sb\"" >&2
   fi
 }

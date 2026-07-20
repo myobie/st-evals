@@ -2,7 +2,7 @@
 
 **Discriminates:** the delegate→execute→verify→confirm loop Codex-native (cross-family)
 
-**Capabilities required:** `codex,st,pty,git`  ·  run `bin/st-evals preflight` to confirm your setup supports this cell.
+**Capabilities required:** `codex,st,pty,git`  ·  run `bin/evals preflight` to confirm your setup supports this cell.
 
 The single-family **Codex** point of the license-mit matrix: same task and world as the Claude and Mixed
 runs (change a `widget` lib's license proprietary → MIT), so it sits as a clean, directly-comparable point.
@@ -15,7 +15,7 @@ Point `ST_ROOT` at a scratch network root and `PERSONAS_DIR` at a checkout of th
 (`bin/ensure-personas.sh` clones it pinned). Then: `fixture/setup-sandbox.sh` to materialize the world
 (reuses the `license-mit` widget builder + composes both Codex `AGENTS.md`), then `fixture/spin.sh` to
 launch the team. Codex wakes via a `ding` sidecar (not asyncRewake); the shared stev harness names and
-tears down the pty sessions (`bin/st-evals teardown <SB>` after grading — zero orphans).
+tears down the pty sessions (`bin/evals teardown <SB>` after grading — zero orphans).
 
 ## Grading
 

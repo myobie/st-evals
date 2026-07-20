@@ -1,9 +1,9 @@
 # Cell registry
 
-The catalogue of every st-evals cell: its SDLC work-type, the **discriminator** (the specific thing a
+The catalogue of every evals cell: its SDLC work-type, the **discriminator** (the specific thing a
 weak team fails), the **held-out** check that makes it un-gameable, and the capabilities it needs. This
 is a gallery of *cell types* — it intentionally carries no graded run-history against any private network
-(those verdicts stay private). Run `bin/st-evals preflight` to see which of these your setup can run.
+(those verdicts stay private). Run `bin/evals preflight` to see which of these your setup can run.
 
 Legend — caps: **C** claude · **X** codex · **G** ollama+GLM · **st** the bus · **pty** sessions ·
 **node** · **git** · **net** network-once. Cross-family judging needs ≥2 families installed.

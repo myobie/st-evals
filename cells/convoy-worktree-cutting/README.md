@@ -3,7 +3,7 @@
 **Discriminates:** do `convoy init --megarepo <path>` + `convoy add <id>` cut a **real linked git worktree** off
 the megarepo into `<net>/worktrees/<id>` — `.git` a file, branch `convoy/<id>`, both trees clean? (deterministic, held-out)
 
-**Capabilities required:** `claude,convoy,st,pty,git` · run `bin/st-evals preflight`. No LLM — real commands, assert
+**Capabilities required:** `claude,convoy,st,pty,git` · run `bin/evals preflight`. No LLM — real commands, assert
 exact git shape.
 
 ## What it proves (Nathan ask + the pollution fix)
@@ -31,7 +31,7 @@ CI/regression guard for the megarepo worktree model. GREEN once #59 lands (it ha
 
 ## Run it
 
-`fixture/probe.sh <SB>` then `fixture/grade.sh <SB>`, or `bin/st-evals run convoy-worktree-cutting`. Greenfield-safe;
+`fixture/probe.sh <SB>` then `fixture/grade.sh <SB>`, or `bin/evals run convoy-worktree-cutting`. Greenfield-safe;
 zero-orphan teardown; never touches the live convoy.
 
 See `task.toml` for the full spec. Reuses the `weird-git-setup` git-worktree layout probes (`.git`-is-a-file,

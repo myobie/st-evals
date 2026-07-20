@@ -58,4 +58,4 @@ echo
 echo "SPUN (compose-global-skill live arm, isolated net $NET). members:"; convoy ls "$NET" 2>/dev/null | grep -E 'gsw|gsnc' || convoy ls "$NET" 2>/dev/null
 echo "OBSERVE: gsw writes \$SB/repo/GLOBAL_SKILL.txt = '$( tr -d '\r\n' < "$SB/.stev/assert")' (from the $SKILL global skill); gsnc writes a city, not that."
 echo "GRADE:    $HERE/grade.sh \"$SB\"   (run probe.sh too for the box-free NO-SHADOW core)"
-echo "TEARDOWN: bin/st-evals teardown \"$SB\". Verify ~/.claude/skills unchanged (the eval only READ it)."
+echo "TEARDOWN: bin/evals teardown \"$SB\". Verify ~/.claude/skills unchanged (the eval only READ it)."

@@ -2,7 +2,7 @@
 
 **Discriminates:** N distinct approaches + productive debate + a justified recommendation
 
-**Capabilities required:** `claude,st,pty,git`  ·  run `bin/st-evals preflight` to confirm your setup supports this cell.
+**Capabilities required:** `claude,st,pty,git`  ·  run `bin/evals preflight` to confirm your setup supports this cell.
 
 ## Run it
 

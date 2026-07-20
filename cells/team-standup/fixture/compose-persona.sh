@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Compose the TEAM-STANDUP personas from the PINNED PUBLIC personas repo (read-only) — the same
-# contract first-run consumes, so this gate ports cleanly to the public st-evals cut. Two roles:
+# contract first-run consumes, so this gate ports cleanly to the public evals cut. Two roles:
 #
 #   cos          -> $SB/personas-local/cos.md            the interviewed chief-of-staff. Stands up +
 #                                                        briefs a specialist for taskflow, delegates the
@@ -21,7 +21,7 @@ WORKER_REPO="$SB/taskflow"
 PERSONA_PATH="$SB/personas-local/taskflow-dev.md"
 
 # Pinned public personas (read-only contract). bin/ensure-personas.sh clones them at the pin and
-# exports PERSONAS_DIR; bin/st-evals does that automatically before running a cell.
+# exports PERSONAS_DIR; bin/evals does that automatically before running a cell.
 PZ="${PERSONAS_DIR:?set PERSONAS_DIR to a checkout of github.com/compoundingtech/personas (bin/ensure-personas.sh clones it pinned)}"
 
 case "$role" in

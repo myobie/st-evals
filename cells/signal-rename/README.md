@@ -41,7 +41,7 @@ Each specialist owns **only** its own repo worktree; the base rename ripples to 
 ## Run it
 
 ```sh
-bin/st-evals run signal-rename          # (once wired) spins the 4-agent tree + seeds the hermetic kick
+bin/evals run signal-rename          # (once wired) spins the 4-agent tree + seeds the hermetic kick
 cells/signal-rename/fixture/grade.sh    # suite-green per repo + held-out invariant + isolation attribution
 ```
 

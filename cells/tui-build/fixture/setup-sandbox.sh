@@ -13,9 +13,9 @@ echo "== clean =="
 rm -rf "$SB"; mkdir -p "$SB"
 SEED="$SB/.seed"; mkdir -p "$SEED/src/views/tree" "$SEED/src/views/cards" "$SEED/src/data" "$SEED/test"
 
-# ── rewrite helper: prototype imports -> the published @myobie/pty/tui seam ──
-# `../../src/tui/<anything>.ts` -> `@myobie/pty/tui`  (index/nodes/types/input all re-export from the barrel)
-lift() { sed -E 's#\.\./\.\./src/tui/[a-zA-Z]+\.ts#@myobie/pty/tui#g' "$1"; }
+# ── rewrite helper: prototype imports -> the published @compoundingtech/pty/tui seam ──
+# `../../src/tui/<anything>.ts` -> `@compoundingtech/pty/tui`  (index/nodes/types/input all re-export from the barrel)
+lift() { sed -E 's#\.\./\.\./src/tui/[a-zA-Z]+\.ts#@compoundingtech/pty/tui#g' "$1"; }
 
 echo "== seed: lift prototypes (rewrite imports) =="
 # tree+preview view (tui-tree's starting point) — proto-5
@@ -51,7 +51,7 @@ cat > "$SEED/package.json" <<'JSON'
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-strip-types --test test/"
   },
-  "dependencies": { "@myobie/pty": "^0.10.0" },
+  "dependencies": { "@compoundingtech/pty": "^0.10.0" },
   "devDependencies": { "typescript": "^5.6.0", "@types/node": "^22.0.0" }
 }
 JSON
@@ -98,7 +98,7 @@ share one data layer:
 - **shared data layer** — `src/data/` (`network.ts` reads `st agents --enrich --json`;
   `mock.ts` is fixture/reference data)
 
-Built on `@myobie/pty/tui` (the published TUI framework).
+Built on `@compoundingtech/pty/tui` (the published TUI framework).
 
 ## Run
 ```
@@ -126,7 +126,7 @@ MD
 echo "== git init seed + bare origin =="
 git -C "$SEED" init -q -b main
 git -C "$SEED" add -A
-git -C "$SEED" -c user.name="eval-seed" -c user.email="seed@local" commit -q -m "seed: lift agent-viz prototypes (tree+cards+preview) onto @myobie/pty/tui"
+git -C "$SEED" -c user.name="eval-seed" -c user.email="seed@local" commit -q -m "seed: lift agent-viz prototypes (tree+cards+preview) onto @compoundingtech/pty/tui"
 SEED_COMMIT="$(git -C "$SEED" rev-parse --short HEAD)"
 git clone -q --bare "$SEED" "$SB/origin.git"
 

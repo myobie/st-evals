@@ -2,7 +2,7 @@
 
 **Discriminates:** an explain-it doc a COLD reader can act on (held-out cold-reader)
 
-**Capabilities required:** `claude,st,pty,git,node`  ·  run `bin/st-evals preflight` to confirm your setup supports this cell.
+**Capabilities required:** `claude,st,pty,git,node`  ·  run `bin/evals preflight` to confirm your setup supports this cell.
 
 ## Run it
 
@@ -14,7 +14,7 @@ runner sets it for you). No external `ST_ROOT` / `ST_HOOKS_DIR` required — spi
 `st launch` wires the boot hooks (asyncRewake / PreCompact / StopFailure) itself.
 
 Run it: `fixture/spin.sh` (auto-materializes the sandbox via `fixture/setup-sandbox.sh` if absent), or
-`bin/st-evals run docs`. Tear down after grading with `bin/st-evals teardown <SB>`.
+`bin/evals run docs`. Tear down after grading with `bin/evals teardown <SB>`.
 
 ## Grading
 

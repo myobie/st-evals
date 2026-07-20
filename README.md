@@ -1,15 +1,18 @@
-# st-evals
+# evals
 
 **Isolation-gated, held-out-graded evals for agent _teams_.**
 
-Most agent evals score one model on one task. st-evals scores a **team** — a supervisor plus
+Most agent evals score one model on one task. evals scores a **team** — a supervisor plus
 specialists, each a real agent on a real message bus — doing real software work: debugging, review,
 incident response, migration, security audit, design, docs, tests, and more. You seed one instruction;
 the team self-organizes; an independent check the team never sees grades the result.
 
-The thing under test is the **system** — the personas, the terminal-session harness, and the
-coordination bus — **not any one model**. Every scenario runs across model families (Claude / Codex /
-GLM / mixed). If the result still holds when you swap the model, it was the system that produced it.
+The thing under test is the **whole network** — **convoy** (the orchestrator that composes agents into
+repos, cuts worktrees, and hosts the network), **smalltalk** (`st`, the message bus + hooks + context),
+and **pty** (the terminal-session harness) — plus the personas, and **not any one model**. These are not
+smalltalk-only evals: cells exercise convoy, st, **and** pty. Every scenario runs across model families
+(Claude / Codex / GLM / mixed). If the result still holds when you swap the model, it was the system that
+produced it.
 
 > **Two ideas do the heavy lifting.** *Isolation* is a hard pass/fail gate: each agent may change only
 > the module it owns; everything else happens by message. *Held-out acceptance* is a check the team can't
@@ -19,20 +22,36 @@ GLM / mixed). If the result still holds when you swap the model, it was the syst
 
 ---
 
-## Quickstart
+## Adopt it — standalone, end to end
+
+evals is self-contained: clone this repo, point it at your network, run a cell. There is nothing to
+install *from evals itself* — the runner is `bin/evals`, a POSIX shell script.
 
 ```sh
-bin/st-evals preflight     # what you have installed → which cells you can run
-bin/st-evals readiness     # first-boot smoke: bus works, agents spawn, messages round-trip
-bin/st-evals list          # the cell catalogue
-bin/st-evals run ghost-bug # run a cell end-to-end
+git clone https://github.com/compoundingtech/evals
+cd evals
+
+bin/evals preflight       # what you have installed → which cells you can run
+bin/evals readiness       # first-boot smoke: bus works, agents spawn, messages round-trip
+bin/evals list            # the cell catalogue (type · ship/flag · caps)
+bin/evals run ghost-bug   # run a cell end-to-end
+bin/evals teardown <SB>   # tear down the sandbox a run left behind
 ```
 
-**Requirements.** A POSIX shell, `git`, and the [`smalltalk`](https://github.com/compoundingtech/smalltalk) bus
-(`st`) + the [`pty`](https://github.com/compoundingtech/pty) session harness on your `PATH`. At least one
-agent harness (`claude` and/or `codex`, or `ollama` + a GLM model). Node for the cells whose sample
-services are JS. `preflight` tells you exactly what you have and what each cell needs — a cell runs only
-if every capability it needs is present, and **cross-family judging** unlocks once you have ≥2 families.
+Every run is **isolated**: it materializes a throwaway sandbox at a frozen commit, uses a scratch network
+root, and never touches your live network. Run `bin/evals teardown <SB>` (printed at the end of a run) to
+reap the sessions it spawned.
+
+**Requirements** (all on your `PATH`; `preflight` verifies them for you):
+
+- [`smalltalk`](https://github.com/compoundingtech/smalltalk) — the message bus, CLI `st`
+- [`pty`](https://github.com/compoundingtech/pty) — the terminal-session harness
+- [`convoy`](https://github.com/compoundingtech/convoy) — the orchestrator (compose / doctor / up), needed by the convoy cells
+- `git`, and `node` for cells whose sample services are JS
+- at least one agent harness: `claude` and/or `codex`, or `ollama` + a GLM model
+
+A cell runs only if **every** capability it needs is present, and **cross-family judging** unlocks once you
+have ≥2 model families installed. `preflight` tells you exactly what you have and what each cell needs.
 
 **Environment a run may need** (each cell's README says which):
 
@@ -70,8 +89,9 @@ full run lifecycle.
 
 ## The catalogue
 
-Ten SDLC work-types, plus onboarding and cross-family variants. Full table with discriminators and
-capabilities in [`REGISTRY.md`](REGISTRY.md); the short version:
+SDLC work-types, whole-network infrastructure cells (**convoy** · **st** · **pty**), onboarding, and
+cross-family variants. Full table with discriminators and capabilities in [`REGISTRY.md`](REGISTRY.md);
+the short version:
 
 | Cell | Work-type | The discriminator (what a weak team fails) |
 |---|---|---|

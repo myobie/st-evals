@@ -2,7 +2,7 @@
 
 **Discriminates:** zero-to-network: init + CoS boots + spawn a specialist + message end-to-end
 
-**Capabilities required:** `st,pty,git`  ·  run `bin/st-evals preflight` to confirm your setup supports this cell.
+**Capabilities required:** `st,pty,git`  ·  run `bin/evals preflight` to confirm your setup supports this cell.
 
 ## Run it
 
@@ -10,7 +10,7 @@
 every CLI call to it, so nothing touches your live network; no external `ST_ROOT` / `ST_HOOKS_DIR` /
 `PERSONAS_DIR` are required (this is a hermetic, offline CLI onboarding walk, not a persona-team launch).
 
-Run it: `fixture/run.sh [SANDBOX]` (or `bin/st-evals run bootstrap-network`) — self-asserting; exit 0 =
+Run it: `fixture/run.sh [SANDBOX]` (or `bin/evals run bootstrap-network`) — self-asserting; exit 0 =
 all 4 gates PASS. The deliverable is the printed friction list.
 
 ## Grading

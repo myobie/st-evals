@@ -2,7 +2,7 @@
 
 **Discriminates:** is **ding-only** a first-class network experience — good boot, clean `[DING]` handling, natural coordination @ 0 rescues — or a degraded fallback? (held-out; the no-MCP shape)
 
-**Capabilities required:** `claude,st,pty,git,node`  ·  run `bin/st-evals preflight` to confirm your setup supports this cell.
+**Capabilities required:** `claude,st,pty,git,node`  ·  run `bin/evals preflight` to confirm your setup supports this cell.
 
 ## What it proves
 
@@ -21,13 +21,13 @@ small so the focus is the *coordination experience*, not task difficulty.
 `fixture/spin.sh` is **self-isolating** — it creates and exports its own scratch bus root at `$SB/st-root`;
 `st launch` bakes that into every session's env (agent **and** ding sidecar), so nothing touches your live
 network. You only need `PERSONAS_DIR` (the runner sets it). Run it: `fixture/spin.sh` (auto-materializes the
-sandbox if absent), or `bin/st-evals run ding-mode`.
+sandbox if absent), or `bin/evals run ding-mode`.
 
 `spin.sh` launches `dm-dev` (owns `widget`) and `dm-sup` (coordinate-only) — **both `--ding`, no MCP** — seeds
 the hermetic kick, and lets them self-organize over ding + the CLI. Each agent has two pty sessions: the
 claude session (`<id>-<stev-prefix>`) and its ding sidecar (`<id>-ding`); both are torn down zero-orphan.
 
-- Grade: `fixture/grade.sh <SB>`  ·  Tear down: `bin/st-evals teardown <SB>` (removes the agents **and** the ding sidecars)
+- Grade: `fixture/grade.sh <SB>`  ·  Tear down: `bin/evals teardown <SB>` (removes the agents **and** the ding sidecars)
 
 ## Grading — the EXPERIENCE, not just delivery
 

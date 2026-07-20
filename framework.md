@@ -1,6 +1,6 @@
-# The st-evals framework
+# The evals framework
 
-st-evals grades **agent teams**, not single agents. A team is a supervisor plus one or more
+evals grades **agent teams**, not single agents. A team is a supervisor plus one or more
 specialists, each running as a real agent on a real message bus. You seed one instruction; the team
 self-organizes; a held-out check grades the result. The thing under test is the **system** — the
 personas, the terminal-session harness, and the coordination bus — not any one model. That's why the

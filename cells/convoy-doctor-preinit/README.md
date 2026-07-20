@@ -4,7 +4,7 @@
 friendly neutral pointer + `rc=0`, or the old scary `✗ named network` / `✗ smalltalk MISSING` blocking wall
 (`rc=1`)? (deterministic, held-out, no LLM)
 
-**Capabilities required:** `convoy,st,pty,git` · run `bin/st-evals preflight`. Box-free (`--quick` spawns no agents).
+**Capabilities required:** `convoy,st,pty,git` · run `bin/evals preflight`. Box-free (`--quick` spawns no agents).
 
 ## What it proves (the Johannes first-command UX)
 
@@ -30,7 +30,7 @@ spawns no agents. This cell never touches the live fleet.
 
 ## Run it
 
-`fixture/probe.sh <SB>` then `fixture/grade.sh <SB>`, or `bin/st-evals run convoy-doctor-preinit`. Greenfield-safe;
+`fixture/probe.sh <SB>` then `fixture/grade.sh <SB>`, or `bin/evals run convoy-doctor-preinit`. Greenfield-safe;
 zero-orphan teardown.
 
 See `task.toml` for the full spec. Sibling:

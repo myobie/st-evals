@@ -2,7 +2,7 @@
 
 **Discriminates:** does a **cold-restarted** agent resume an ordered batch **losslessly** — every item done at least once (no skip), no corrupting redo — from the durable substrate alone? (held-out)
 
-**Capabilities required:** `claude,st,pty,git,node`  ·  run `bin/st-evals preflight` to confirm your setup supports this cell.
+**Capabilities required:** `claude,st,pty,git,node`  ·  run `bin/evals preflight` to confirm your setup supports this cell.
 
 ## What it proves
 
@@ -25,13 +25,13 @@ exports its own scratch bus root at `$SB/st-root`, so nothing touches your live 
 agents (and the cold relaunch) inherit that root by env inheritance. You only need `PERSONAS_DIR` (the
 runner sets it for you via `bin/ensure-personas.sh`). No external `ST_ROOT` / `ST_HOOKS_DIR` required.
 
-Run it: `fixture/spin.sh` (auto-materializes the sandbox if absent), or `bin/st-evals run restart-continuity`.
+Run it: `fixture/spin.sh` (auto-materializes the sandbox if absent), or `bin/evals run restart-continuity`.
 `spin.sh` launches `rc-dev` (owns `ledger`) + `rc-sup` (coordinate-only), seeds the hermetic kick, then
 **backgrounds `fixture/restart-injector.sh`** — the scripted fault injection that cold-restarts `rc-dev`
 after item 2 lands.
 
 - Watch the injection: `tail -f $SB/.stev/injector.out`  ·  the batch: `git -C $SB/ledger log --oneline`
-- Grade: `fixture/grade.sh <SB>`  ·  Tear down (zero-orphan, incl. the relaunched session): `bin/st-evals teardown <SB>`
+- Grade: `fixture/grade.sh <SB>`  ·  Tear down (zero-orphan, incl. the relaunched session): `bin/evals teardown <SB>`
 
 ## The cold restart (the one novel harness piece)
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-# hook-integrity — the SINGLE-COMMAND diagnostic. Clone st-evals, run one command, read a loud
+# hook-integrity — the SINGLE-COMMAND diagnostic. Clone evals, run one command, read a loud
 # PASS/FAIL banner that tells you whether your Claude Code SessionStart hook actually FIRES.
 #
-#   bin/st-evals run hook-integrity          # (preferred — provisions personas, gates on caps)
+#   bin/evals run hook-integrity          # (preferred — provisions personas, gates on caps)
 #   cells/hook-integrity/fixture/run.sh      # (direct)
 #
 # What it does: generates a fresh secret token; materializes TWO isolated sandboxes with the SAME
@@ -19,7 +19,7 @@ set -euo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$HERE/../../../bin/lib-harness.sh"
 BASE="${EVAL_SANDBOX:-./.sandbox}/hook-integrity"
-case "${1:-}" in */*|/*) BASE="$1" ;; esac   # `st-evals run` forwards the cell NAME as $1 — ignore it; only a path-like arg overrides
+case "${1:-}" in */*|/*) BASE="$1" ;; esac   # `evals run` forwards the cell NAME as $1 — ignore it; only a path-like arg overrides
 SB_ON="$BASE/on"; SB_OFF="$BASE/off"
 TIMEOUT="${HI_TIMEOUT:-240}"; GRACE="${HI_GRACE:-45}"
 

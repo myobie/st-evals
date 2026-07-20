@@ -4,12 +4,12 @@
 the rig under `.convoy/`, a pristine product-repo root, a host-prefixed `smalltalk/` bus folder, a no-resume
 `pty.toml`? (deterministic, held-out)
 
-**Capabilities required:** `convoy,st,pty,git` · run `bin/st-evals preflight`. No LLM — real command, assert exact shape.
+**Capabilities required:** `convoy,st,pty,git` · run `bin/evals preflight`. No LLM — real command, assert exact shape.
 
 ## What it proves (Nathan ask)
 
 Prove `convoy add` produces the structure we *think*. Per the redesign
-([`cos notes/convoy-structure-redesign.md`](https://github.com/myobie/cos/blob/main/notes/convoy-structure-redesign.md)):
+([`cos notes/convoy-structure-redesign.md`](https://github.com/compoundingtech/cos/blob/main/notes/convoy-structure-redesign.md)):
 the workspace overlay moves **out of the repo root into `.convoy/`** (`PERSONA.md` + `DING-BUS.md` + `pty.toml`),
 plus `.claude/settings.local.json`, **all git-excluded** so the product-repo root stays **pristine**; the bus folder
 is `<net>/smalltalk/<shorthost>.<identity>/` with `inbox/` + `archive/` + `status`; and `pty.toml` carries **no
@@ -29,7 +29,7 @@ CI/regression guard for that shape (complementary to `convoy doctor`). **RED** u
 
 ## Run it
 
-`fixture/probe.sh <SB>` then `fixture/grade.sh <SB>`, or `bin/st-evals run convoy-add-structure`. Greenfield-safe;
+`fixture/probe.sh <SB>` then `fixture/grade.sh <SB>`, or `bin/evals run convoy-add-structure`. Greenfield-safe;
 zero-orphan teardown; never touches the live convoy.
 
 See `task.toml` for the full spec. Sibling: [`convoy-init-structure`](../convoy-init-structure/README.md) (the

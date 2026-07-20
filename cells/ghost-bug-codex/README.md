@@ -2,7 +2,7 @@
 
 **Discriminates:** the debug loop Codex-native (cross-family)
 
-**Capabilities required:** `codex,st,pty,git,node`  ·  run `bin/st-evals preflight` to confirm your setup supports this cell.
+**Capabilities required:** `codex,st,pty,git,node`  ·  run `bin/evals preflight` to confirm your setup supports this cell.
 
 ## Run it
 

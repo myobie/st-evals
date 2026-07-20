@@ -2,7 +2,7 @@
 
 **Discriminates:** the design panel Codex-native (cross-family)
 
-**Capabilities required:** `codex,st,pty,git`  ·  run `bin/st-evals preflight` to confirm your setup supports this cell.
+**Capabilities required:** `codex,st,pty,git`  ·  run `bin/evals preflight` to confirm your setup supports this cell.
 
 ## Run it
 

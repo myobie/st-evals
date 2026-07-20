@@ -4,7 +4,7 @@
 working state from `now.md` — via the **codex** SessionStart hook (smalltalk **PR #86**) — the same way the claude
 cell proves for Claude? (held-out)
 
-**Capabilities required:** `codex,st,pty,git` + **`jq`** (the codex hook hard-deps jq) · run `bin/st-evals
+**Capabilities required:** `codex,st,pty,git` + **`jq`** (the codex hook hard-deps jq) · run `bin/evals
 preflight` to confirm.
 
 ## What it proves (the cross-family leg of Nathan's mandate)
@@ -38,8 +38,8 @@ corollary (a fresh codex session has no `--resume` channel), and the headline is
 `SMALLTALK_REPO`).
 
 - Deterministic gates (no box): `fixture/probe.sh <SB>` then `fixture/grade.sh <SB>`
-- Full live run: `fixture/spin.sh`, or `bin/st-evals run restorability-codex`
-- Grade: `fixture/grade.sh <SB>` · Tear down: `bin/st-evals teardown <SB>`
+- Full live run: `fixture/spin.sh`, or `bin/evals run restorability-codex`
+- Grade: `fixture/grade.sh <SB>` · Tear down: `bin/evals teardown <SB>`
 
 ## Grading
 

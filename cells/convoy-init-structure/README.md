@@ -3,13 +3,13 @@
 **Discriminates:** does the real `convoy init <net>` create the redesign network structure —
 `<net>/{smalltalk,pty,worktrees}` + a recorded config? (deterministic, held-out)
 
-**Capabilities required:** `convoy,st,pty,git` · run `bin/st-evals preflight`. No LLM — this cell runs the real
+**Capabilities required:** `convoy,st,pty,git` · run `bin/evals preflight`. No LLM — this cell runs the real
 command and asserts the exact on-disk shape.
 
 ## What it proves (Nathan ask)
 
 Prove our real tooling produces the structure we *think*. Per the redesign
-([`cos notes/convoy-structure-redesign.md`](https://github.com/myobie/cos/blob/main/notes/convoy-structure-redesign.md)),
+([`cos notes/convoy-structure-redesign.md`](https://github.com/compoundingtech/cos/blob/main/notes/convoy-structure-redesign.md)),
 `convoy init` creates a named network directory with `smalltalk/` (synced bus state), `pty/` (machine-local pty
 runtime), and `worktrees/` (the workspaces), plus a recorded network config so `add`/`up`/`doctor` stay consistent.
 
@@ -26,7 +26,7 @@ the moment convoy regresses the shape.
 
 ## Run it
 
-`fixture/probe.sh <SB>` then `fixture/grade.sh <SB>`, or `bin/st-evals run convoy-init-structure`. Greenfield-safe
+`fixture/probe.sh <SB>` then `fixture/grade.sh <SB>`, or `bin/evals run convoy-init-structure`. Greenfield-safe
 (fresh isolated nets, zero-orphan teardown — never touches the live convoy).
 
 See `task.toml` for the full spec. Sibling: [`convoy-add-structure`](../convoy-add-structure/README.md) (the

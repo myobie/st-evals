@@ -50,4 +50,4 @@ echo "SPUN (restorability-codex cell, isolated convoy net $NET). members:"; conv
 echo "OBSERVE (ST_ROOT=$NET): seed now.md -> convoy add --harness codex -> convoy reload (no-resume) ->"
 echo "  rlx-wk reconstructs from now.md via the codex SessionStart hook (PR #86) -> writes RECONSTRUCTED.log."
 echo "GRADE after it settles:  $HERE/grade.sh \"$SB\"   (run probe.sh too for the box-free deterministic gates)"
-echo "TEARDOWN after grading:  bin/st-evals teardown \"$SB\"   (or: convoy down \"$NET\" --force; rm -rf \"$SB\")"
+echo "TEARDOWN after grading:  bin/evals teardown \"$SB\"   (or: convoy down \"$NET\" --force; rm -rf \"$SB\")"

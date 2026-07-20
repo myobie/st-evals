@@ -5,7 +5,7 @@ reconstructing its working state purely from externalized durable substrate (`no
 git + bus) — **and** without inheriting stale session state (a stuck CC input-queue) the way a `--resume` restore
 does? (held-out)
 
-**Capabilities required:** `claude,st,pty,git` · run `bin/st-evals preflight` to confirm your setup supports this
+**Capabilities required:** `claude,st,pty,git` · run `bin/evals preflight` to confirm your setup supports this
 cell. The codex twin (`restorability-codex`) needs `codex` + `jq`.
 
 ## What it proves (Nathan's mandate: agents *don't use* resume AND *don't need* it)
@@ -56,8 +56,8 @@ That trio *is* the mandate's proof.
 with `SMALLTALK_REPO`).
 
 - Deterministic gates (no box): `fixture/probe.sh <SB>` then `fixture/grade.sh <SB>`
-- Full live run: `fixture/spin.sh` (auto-materializes the sandbox), or `bin/st-evals run restorability`
-- Grade: `fixture/grade.sh <SB>` · Tear down (zero-orphan): `bin/st-evals teardown <SB>`
+- Full live run: `fixture/spin.sh` (auto-materializes the sandbox), or `bin/evals run restorability`
+- Grade: `fixture/grade.sh <SB>` · Tear down (zero-orphan): `bin/evals teardown <SB>`
 
 ## Grading
 

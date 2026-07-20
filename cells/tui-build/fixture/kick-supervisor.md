@@ -19,7 +19,7 @@ Build it as a small TUI in the repo you own, in **two layouts that share one dat
 
 It reads the network **read-only** — the agent list from `st agents --enrich --json` and the message
 dir under `$ST_ROOT` — and must **never** write agent state. There are prototype views already (a
-tree+preview and a cards+preview), built on `@myobie/pty/tui` — start from those, don't restart from scratch.
+tree+preview and a cards+preview), built on `@compoundingtech/pty/tui` — start from those, don't restart from scratch.
 
 Then — the part I actually care about — do a **real usability pass**: put fresh eyes on it and find the
 human-centered problems (empty states, long/overflowing lists, truncation, statuses that don't read

@@ -2,7 +2,7 @@
 
 **Discriminates:** a team builds a real terminal UI over the agent network — two views sharing one data layer — and does a **human-centered usability find→fix pass**. "It renders the mock" is table stakes; "it's usable on the real network" is the bar.
 
-**Capabilities required:** `claude,st,pty,git,node`  ·  run `bin/st-evals preflight` to confirm your setup supports this cell.
+**Capabilities required:** `claude,st,pty,git,node`  ·  run `bin/evals preflight` to confirm your setup supports this cell.
 
 ## Run it
 
@@ -14,7 +14,7 @@ runner sets it). No external `ST_ROOT` / `ST_HOOKS_DIR` required — spin owns t
 the boot hooks (asyncRewake / PreCompact / StopFailure) itself.
 
 - `fixture/setup-sandbox.sh [SANDBOX]` — seed the `agent-viz` repo from the bundled prototypes (bare origin + one clone per agent, distinct authors) + materialize the frozen synthetic network.
-- `fixture/spin.sh [SANDBOX]` — compose the 4 personas, `st launch` the team (workers first, sup last), seed the build request into `tui-sup`'s inbox (`tui-sup` integration lead + `tui-tree`/`tui-cards` view specialists + `tui-ux` usability reviewer). Or: `bin/st-evals run tui-build`.
+- `fixture/spin.sh [SANDBOX]` — compose the 4 personas, `st launch` the team (workers first, sup last), seed the build request into `tui-sup`'s inbox (`tui-sup` integration lead + `tui-tree`/`tui-cards` view specialists + `tui-ux` usability reviewer). Or: `bin/evals run tui-build`.
 - `fixture/grade.sh [SANDBOX]` — mechanical gates (isolation + suite-green + wired-to-real-data + status-coverage) + render/usability pointers.
 
 **Two roots (don't conflate):** `ST_ROOT` here is the **message bus** (where the team talks). The built viz reads its **data** from the **frozen fixture** — `ST_ROOT=<sandbox>/fixture/smalltalk` — a separate root the personas pass explicitly. The frozen fixture is what makes tests + grading reproducible.

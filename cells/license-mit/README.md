@@ -2,7 +2,7 @@
 
 **Discriminates:** delegate->execute->verify->confirm loop + isolation (matrix-capable)
 
-**Capabilities required:** `claude,st,pty,git`  ·  run `bin/st-evals preflight` to confirm your setup supports this cell.
+**Capabilities required:** `claude,st,pty,git`  ·  run `bin/evals preflight` to confirm your setup supports this cell.
 
 ## Run it
 
@@ -12,8 +12,8 @@ your live network; the st-launched agents inherit that root. You only need `PERS
 the public personas repo — `bin/ensure-personas.sh` clones it pinned; the runner sets it for you). No
 external `ST_ROOT` / `ST_HOOKS_DIR` required.
 
-Run it: `fixture/spin.sh` (auto-materializes the sandbox if absent), or `bin/st-evals run license-mit`.
-Tear down after grading with `bin/st-evals teardown <SB>`.
+Run it: `fixture/spin.sh` (auto-materializes the sandbox if absent), or `bin/evals run license-mit`.
+Tear down after grading with `bin/evals teardown <SB>`.
 
 **Default = Claude-only** (Claude supervisor + Claude worker) — the most reliable from-scratch run, matching
 this cell's declared caps. This is the **matrix cell**, so the same task/world also runs cross-family: use

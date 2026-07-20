@@ -4,12 +4,12 @@
 being *configured*. Reading `settings.local.json` proves configuration — which was already true in the
 field case this comes from, where hooks were configured but silently never ran. This proves execution.
 
-**Capabilities required:** `claude,st,pty,git`  ·  run `bin/st-evals preflight` to confirm your setup.
+**Capabilities required:** `claude,st,pty,git`  ·  run `bin/evals preflight` to confirm your setup.
 
 ## Run it (one command)
 
 ```
-bin/st-evals run hook-integrity
+bin/evals run hook-integrity
 ```
 
 It prints a **loud PASS / FAIL banner**. `PASS` = your SessionStart hook fires and rehydrates

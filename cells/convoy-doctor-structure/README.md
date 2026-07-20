@@ -3,7 +3,7 @@
 **Discriminates:** does the narrated `convoy doctor` actually **prove** the network is laid out correctly — a
 Structure section that PASSES on a well-formed net and **FAILS on a malformed one**? (deterministic, held-out)
 
-**Capabilities required:** `claude,convoy,st,pty,git` · run `bin/st-evals preflight`. The structure half is no-LLM;
+**Capabilities required:** `claude,convoy,st,pty,git` · run `bin/evals preflight`. The structure half is no-LLM;
 the `--full` can-work half rides the box (gated).
 
 ## What it proves (Nathan ask — the Johannes gate)
@@ -31,7 +31,7 @@ never touches the live fleet (verified: no doctor session leaks to the global pt
 
 ## Run it
 
-`fixture/probe.sh <SB>` then `fixture/grade.sh <SB>`, or `bin/st-evals run convoy-doctor-structure`. The can-work
+`fixture/probe.sh <SB>` then `fixture/grade.sh <SB>`, or `bin/evals run convoy-doctor-structure`. The can-work
 half runs via `fixture/spin.sh` (gated). Greenfield-safe; zero-orphan teardown.
 
 See `task.toml` for the full spec. Siblings:

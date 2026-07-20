@@ -3,7 +3,7 @@
 # docs + the checkout library as a MANGLED BLACK BOX (input param names stripped: `add(a,b,c)`,
 # `setTax(a)` — so peeking reveals nothing about the cents/basis-points/immutability/seal conventions;
 # the reader MUST learn them from the docs). Then runs a FRESH `claude --print` agent (no persona, no
-# coord, no memory of the design) that must build an order given in HUMAN terms ($12.50, 8% tax) and
+# bus, no memory of the design) that must build an order given in HUMAN terms ($12.50, 8% tax) and
 # write the library's total() result. Good docs -> reader gets totalCents=1944; docs missing a
 # load-bearing contract -> reader is silently wrong.
 #   ./cold-reader.sh [WORKER_REPO] [READER_SANDBOX]

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ─────────────────────────────────────────────────────────────────────────────
-# st-evals readiness — the first-boot smoke suite. Answers "is this setup wired
+# evals readiness — the first-boot smoke suite. Answers "is this setup wired
 # well enough to run agent-team evals at all?" before you invest in a full cell.
 #
 # It checks, in order:
@@ -14,14 +14,14 @@
 # Exit 0 = READY (the essentials passed). Exit 1 = a hard essential failed (can't
 # spawn / can't message) — those block; everything else is reported as a finding.
 #
-#   st-evals readiness [SANDBOX_DIR]
+#   evals readiness [SANDBOX_DIR]
 # ─────────────────────────────────────────────────────────────────────────────
 set -uo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "$HERE/.." && pwd)"
 SANDBOX="${1:-${EVAL_SANDBOX:-$ROOT/.sandbox}/readiness}"
 
-echo "═══ st-evals readiness ═══"
+echo "═══ evals readiness ═══"
 echo
 echo "── 1. capabilities ──"
 "$HERE/preflight.sh" || true
@@ -35,11 +35,11 @@ fi
 if "$BN" "$SANDBOX"; then
   echo
   echo "✓ READY — the bus works, a CoS spawns a specialist, and messages round-trip."
-  echo "  Next: st-evals list  → pick a cell your setup supports (st-evals preflight)."
+  echo "  Next: evals list  → pick a cell your setup supports (evals preflight)."
   exit 0
 else
   echo
   echo "✗ NOT READY — an essential gate failed above (spawn or message round-trip)."
-  echo "  Fix the ✗/⚠ items, then re-run: st-evals readiness"
+  echo "  Fix the ✗/⚠ items, then re-run: evals readiness"
   exit 1
 fi

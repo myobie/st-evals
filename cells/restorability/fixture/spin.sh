@@ -58,4 +58,4 @@ echo "SPUN (restorability cell, isolated convoy net $NET). members:"; convoy ls 
 echo "OBSERVE (ST_ROOT=$NET): seed now.md -> convoy add (cold boot) -> convoy reload (no-resume restart) ->"
 echo "  rl-wk reconstructs from now.md via the SessionStart hook -> writes RECONSTRUCTED.log with the token."
 echo "GRADE after it settles:  $HERE/grade.sh \"$SB\"   (run probe.sh too for the box-free deterministic gates)"
-echo "TEARDOWN after grading:  bin/st-evals teardown \"$SB\"   (or: convoy down \"$NET\" --force; rm -rf \"$SB\")"
+echo "TEARDOWN after grading:  bin/evals teardown \"$SB\"   (or: convoy down \"$NET\" --force; rm -rf \"$SB\")"

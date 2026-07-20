@@ -1,4 +1,4 @@
-# st-evals cell manifest — single source of truth for preflight, readiness, and the registry.
+# evals cell manifest — single source of truth for preflight, readiness, and the registry.
 # Format:  cell | type | ship | caps | discriminator
 #   caps: comma-list from {claude, codex, glm, st, pty, git, node, gh, network}
 #   ship: ship | flag   (flag = de-personalize + get sign-off before publishing)

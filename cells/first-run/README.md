@@ -2,7 +2,7 @@
 
 **Discriminates:** consume public personas SHA-pinned + run first-run interview -> a private cos repo
 
-**Capabilities required:** `st,git,network`  ·  run `bin/st-evals preflight` to confirm your setup supports this cell.
+**Capabilities required:** `st,git,network`  ·  run `bin/evals preflight` to confirm your setup supports this cell.
 
 ## Run it
 
