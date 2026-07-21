@@ -46,7 +46,9 @@ elif [ -f "$SB/.kill.log" ]; then no "cap-cos was crashed but convoy up emitted 
 else wn "no crash was injected (kill-injector didn't run) — the respawn gate was not exercised"; fi
 
 echo "== LOOP CLOSED (held-out — a THREADED reply reached the requester with the answer) =="
-reply="$(grep -lRE '^from:[[:space:]]*cap-cos([[:space:]]|$)' "$NET/cap-req/inbox" "$NET/cap-req/archive" 2>/dev/null | head -1)"
+# convoy runs the bus under $NET/smalltalk; cap-req (synthetic requester) stays bare, cap-cos is host-prefixed.
+SM="$NET/smalltalk"; reqbox="$(ls -d "$SM"/*.cap-req "$SM/cap-req" 2>/dev/null | head -1)"; reqbox="${reqbox:-$SM/cap-req}"
+reply="$(grep -lRE '^from:[[:space:]]*([a-z0-9._-]+\.)?cap-cos([[:space:]]|$)' "$reqbox/inbox" "$reqbox/archive" 2>/dev/null | head -1)"
 if [ -z "$reply" ]; then no "no reply from cap-cos in cap-req's inbox — the loop did not close"
 else
   irt="$(grep -E '^in-reply-to:' "$reply" 2>/dev/null | head -1 | sed 's/^in-reply-to:[[:space:]]*//')"
