@@ -17,8 +17,9 @@ SB="${1:-${EVAL_SANDBOX:-./.sandbox}/license-mixed}"
 NET="$SB/st-root"                                   # SELF-ISOLATED convoy network (never the live one)
 export ST_ROOT="$NET"                               # bus root; convoy places sessions under $NET/pty
 SUP_ID="${SUP_ID:-mix-sup}"; WORKER_ID="${WORKER_ID:-mix-worker}"
+REQUESTER="${REQUESTER:-eval-runner}"              # who sends the kick + whom the sup confirms back to
 # configure-claude-agent.sh runs as a separate process and reads these under `set -u` — must be EXPORTED.
-export SUP_ID WORKER_ID
+export SUP_ID WORKER_ID REQUESTER
 
 [ -d "$SB/worker" ] || { echo "== sandbox absent — materializing =="; "$HERE/setup-sandbox.sh" "$SB"; }
 
@@ -46,12 +47,33 @@ convoy pretrust "$SB/sup" "$SB/worker"
 echo "== 4/5  launch the supervisor (convoy add: $SUP_ID, bypass) — creates its inbox + ding sidecar =="
 "$HERE/configure-claude-agent.sh" sup "$SB"
 
-echo "== 5/5  seed the hermetic kick into $SUP_ID's inbox; the ding sidecar delivers it (boot-time ms) =="
-mkdir -p "$NET/$SUP_ID/inbox"
-ms=$(( $(date +%s) * 1000 ))
-sfx="$(printf '%06x' "$(( (RANDOM << 8 ^ RANDOM) & 0xffffff ))")"
-sed -n '/^---$/,$p' "$HERE/kick-supervisor.md" > "$NET/$SUP_ID/inbox/${ms}-${sfx}.md"
-echo "   seeded $NET/$SUP_ID/inbox/${ms}-${sfx}.md"
+echo "== 5/5  seed the hermetic kick — deliver it to $SUP_ID over the REAL isolated bus =="
+# convoy runs smalltalk under $NET/smalltalk and registers each agent HOST-PREFIXED (e.g. hetz.mix-sup).
+# The pre-convoy '$NET/$SUP_ID/inbox' file-drop therefore landed in a dir NOBODY watches → the kick never
+# reached the supervisor and the whole loop silently no-op'd (the team spun green but did nothing — the
+# hollow-green trap). Deliver through `st` instead: it writes to the right host-prefixed inbox AND notifies
+# the supervisor's `st ding` socket, so the running agent is poked to drain it (a raw file-drop into the
+# correct path is picked up too, but only on the next inbox poll — st's socket notify is immediate).
+SM="$NET/smalltalk"
+# convoy creates the sup's bus dir when the agent registers on boot (during step 4's `convoy up --once`);
+# that can lag the launch, so wait (bounded) for it, then read the real host-prefixed id convoy assigned.
+# NB: `find` returns rc 0 even on no-match (a non-matching `ls` glob returns rc 2 → would trip this
+# script's `set -e` on the first iteration, before the agent has registered its dir).
+supbus=""
+for _ in $(seq 1 90); do
+  supbus="$(find "$SM" -maxdepth 1 -type d \( -name "*.$SUP_ID" -o -name "$SUP_ID" \) 2>/dev/null | head -1)"
+  if [ -n "$supbus" ]; then break; fi
+  sleep 1
+done
+[ -n "$supbus" ] || { echo "spin: $SUP_ID never registered a bus dir under $SM — did it boot?" >&2; exit 1; }
+supid="$(basename "$supbus")"
+# The hermetic kick file stays the single source of truth: parse its subject/priority/body and send them.
+ksubj="$(sed -n 's/^subject:[[:space:]]*//p' "$HERE/kick-supervisor.md" | head -1 | sed 's/^"//;s/"$//')"
+kprio="$(sed -n 's/^priority:[[:space:]]*//p'  "$HERE/kick-supervisor.md" | head -1)"
+kbody="$(awk 'seen>=2; /^---$/{seen++}' "$HERE/kick-supervisor.md")"
+ST_ROOT="$SM" ST_AGENT="$REQUESTER" st message send "$supid" \
+  --subject "$ksubj" --priority "${kprio:-normal}" -m "$kbody"
+echo "   delivered kick ($REQUESTER -> $supid) over $SM"
 
 echo
 echo "SPUN (license-mit cell, isolated convoy net at $NET). members:"

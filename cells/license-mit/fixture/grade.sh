@@ -38,7 +38,7 @@
 # ─────────────────────────────────────────────────────────────────────────────
 set -uo pipefail
 SB="${1:-${EVAL_SANDBOX:-./.sandbox}/license-mixed}"
-W="$SB/worker"; SUP="$SB/sup"; STR="$SB/st-root"
+W="$SB/worker"; SUP="$SB/sup"; STR="$SB/st-root"; SM="$STR/smalltalk"   # convoy runs the bus under st-root/smalltalk
 SUP_ID="${SUP_ID:-mix-sup}"; WORKER_ID="${WORKER_ID:-mix-worker}"; REQUESTER="${REQUESTER:-eval-runner}"
 pass=0; fail=0; warn=0
 ok(){ echo "  [PASS] $1"; pass=$((pass+1)); }
@@ -48,10 +48,15 @@ wn(){ echo "  [WARN] $1"; warn=$((warn+1)); }
 [ -d "$W/.git" ] || { echo "no worker repo at $W — did the run happen? (spin.sh materializes + launches)"; exit 1; }
 BASE=$(git -C "$W" rev-list --max-parents=0 HEAD 2>/dev/null)
 
-# search an agent's inbox+archive for messages whose `from:` header is a given sender
-msgs_from(){ local owner="$1" from="$2"
-  grep -lRE "^from:[[:space:]]*$from([[:space:]]|\$)" "$STR/$owner/inbox" "$STR/$owner/archive" 2>/dev/null; }
+# convoy runs smalltalk under $STR/smalltalk and HOST-PREFIXES real agents (e.g. hetz.mix-sup); a synthetic
+# requester (eval-runner) stays bare. Resolve an id to its on-disk bus dir (prefer the host-prefixed one).
+busdir(){ local id="$1" d; d="$(ls -d "$SM"/*."$id" "$SM/$id" 2>/dev/null | head -1)"; printf '%s\n' "${d:-$SM/$id}"; }
+# messages in <owner>'s inbox+archive whose `from:` is <from>, tolerating convoy's host prefix (hetz.<from>)
+msgs_from(){ local owner from; owner="$(busdir "$1")"; from="$2"
+  grep -lRE "^from:[[:space:]]*([a-z0-9][a-z0-9._-]*\.)?$from([[:space:]]|\$)" "$owner/inbox" "$owner/archive" 2>/dev/null; }
 nlines(){ [ -z "$1" ] && echo 0 || printf '%s\n' "$1" | grep -c .; }
+# the newest smalltalk-filename ms (messages are named <epoch-ms>-<sfx>.md) among a newline list of files
+newest_ts(){ local t max=0; for f in $1; do t="$(basename "$f" | grep -oE '^[0-9]+')"; [ "${t:-0}" -gt "$max" ] && max="$t"; done; echo "$max"; }
 
 echo "== ISOLATION (hard gate — supervisor owns no repo; change corroborated by the bus) =="
 [ -d "$SUP/.git" ] && no "supervisor dir IS a git repo (must own none)" \
@@ -104,7 +109,16 @@ report=$(msgs_from "$SUP_ID" "$WORKER_ID")         # worker -> sup (the report l
 confirm=$(msgs_from "$REQUESTER" "$SUP_ID")        # sup -> requester (the confirmation lands in the requester's box)
 [ -n "$deleg" ]   && ok "sup -> worker delegation present on the bus ($(nlines "$deleg") msg)"   || no "no sup -> worker delegation on the bus (delegation not visible ⇒ possible out-of-band work)"
 [ -n "$report" ]  && ok "worker -> sup report present on the bus ($(nlines "$report") msg)"       || no "no worker -> sup report on the bus (execute/report not visible ⇒ possible sup-did-it-itself)"
-[ -n "$confirm" ] && ok "sup -> $REQUESTER confirmation present on the bus ($(nlines "$confirm") msg)" || no "no sup -> $REQUESTER confirmation on the bus (the loop never closed)"
+# The confirmation must be the VERIFIED one, sent AFTER the worker reported done — not merely the sup's
+# initial "on it, will confirm" ACK it fires right after the kick. Require a sup->requester message whose
+# timestamp post-dates the worker's report; an ACK-only sup (that never verified/confirmed) then fails.
+if [ -z "$confirm" ]; then
+  no "no sup -> $REQUESTER confirmation on the bus (the loop never closed)"
+elif [ -n "$report" ] && [ "$(newest_ts "$confirm")" -gt "$(newest_ts "$report")" ]; then
+  ok "sup -> $REQUESTER confirmation present AND post-dates the worker's report (verified confirm, not a bare ACK)"
+else
+  no "sup -> $REQUESTER messages exist but none post-date the worker's report (looks like an ACK only — the sup never sent a verified confirmation)"
+fi
 
 echo "== AUTONOMY (signal — post-kick rescues; 1 requester->sup msg = the kick only) =="
 kicks=$(msgs_from "$SUP_ID" "$REQUESTER"); n=$(nlines "$kicks")
