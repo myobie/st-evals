@@ -58,6 +58,10 @@ for role in sup a b c; do
   git -C "$d" init -q -b main
   git -C "$d" add -A
   git -C "$d" -c user.name="evals-seed" -c user.email="seed@local" commit -q -m "fork-in-the-road: seed the design brief (PROBLEM.md)"
+  # Pin each dir's git author to the OWNING agent so the isolation gate can attribute every commit by
+  # DISTINCT author (matches the Claude fork-in-the-road fixture; grade.sh checks fdx-<role>@eval.local).
+  git -C "$d" config user.name  "fdx-$role"
+  git -C "$d" config user.email "fdx-$role@eval.local"
 done
 
 echo
