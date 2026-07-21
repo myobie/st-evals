@@ -23,11 +23,14 @@ pass=0; fail=0; warn=0
 ok(){ echo "  [PASS] $1"; pass=$((pass+1)); }
 no(){ echo "  [FAIL] $1"; fail=$((fail+1)); }
 wn(){ echo "  [WARN] $1"; warn=$((warn+1)); }
-msgs_from(){ local owner="$1" from="$2" box="${3:-both}";
+# convoy runs the bus under st-root/smalltalk, host-prefixing real agents (e.g. hetz.dm-sup) — resolve it.
+SM="$STR/smalltalk"
+busdir(){ local id="$1" d; d="$(ls -d "$SM"/*."$id" "$SM/$id" 2>/dev/null | head -1)"; printf '%s\n' "${d:-$SM/$id}"; }
+msgs_from(){ local bd from box; bd="$(busdir "$1")"; from="$2"; box="${3:-both}"; local re="^from:[[:space:]]*([a-z0-9][a-z0-9._-]*\.)?$from([[:space:]]|\$)";
   case "$box" in
-    inbox)   grep -lRE "^from:[[:space:]]*$from([[:space:]]|\$)" "$STR/$owner/inbox" 2>/dev/null ;;
-    archive) grep -lRE "^from:[[:space:]]*$from([[:space:]]|\$)" "$STR/$owner/archive" 2>/dev/null ;;
-    *)       grep -lRE "^from:[[:space:]]*$from([[:space:]]|\$)" "$STR/$owner/inbox" "$STR/$owner/archive" 2>/dev/null ;;
+    inbox)   grep -lRE "$re" "$bd/inbox" 2>/dev/null ;;
+    archive) grep -lRE "$re" "$bd/archive" 2>/dev/null ;;
+    *)       grep -lRE "$re" "$bd/inbox" "$bd/archive" 2>/dev/null ;;
   esac; }
 cnt(){ echo "$1" | grep -c . ; }
 

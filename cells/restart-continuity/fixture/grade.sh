@@ -119,8 +119,11 @@ else
 fi
 
 echo "== COORDINATION (signal, not a hard gate — delegate->report loop visible on the bus; human read) =="
-msgs_from(){ local owner="$1" from="$2";
-  grep -lRE "^from:[[:space:]]*$from([[:space:]]|\$)" "$STR/$owner/inbox" "$STR/$owner/archive" 2>/dev/null; }
+# convoy runs the bus under st-root/smalltalk, host-prefixing real agents (e.g. hetz.rc-sup) — resolve it.
+SM="$STR/smalltalk"
+busdir(){ local id="$1" d; d="$(ls -d "$SM"/*."$id" "$SM/$id" 2>/dev/null | head -1)"; printf '%s\n' "${d:-$SM/$id}"; }
+msgs_from(){ local bd from; bd="$(busdir "$1")"; from="$2";
+  grep -lRE "^from:[[:space:]]*([a-z0-9][a-z0-9._-]*\.)?$from([[:space:]]|\$)" "$bd/inbox" "$bd/archive" 2>/dev/null; }
 brief=$(msgs_from rc-dev rc-sup); report=$(msgs_from rc-sup rc-dev)
 # Coordination is a SIGNAL for this cell (the hard gates are isolation + no-skip + no-corruption + resume);
 # a missing delegation with the work somehow done = out-of-band coordination → WARN + investigate, not fail.

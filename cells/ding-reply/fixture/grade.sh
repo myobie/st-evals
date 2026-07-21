@@ -9,6 +9,11 @@
 set -uo pipefail
 SB="${1:-${EVAL_SANDBOX:-./.sandbox}/ding-reply}"
 STR="$SB/st-root"; AGENT="dr-agent"; REQ="dr-req"; d="$SB/work"
+# convoy runs the bus under st-root/smalltalk, host-prefixing real agents (e.g. hetz.dr-agent; the synthetic
+# requester dr-req stays bare). Resolve an id to its bus dir + build a host-prefix-tolerant `from:` regex.
+SM="$STR/smalltalk"
+busdir(){ local id="$1" d; d="$(ls -d "$SM"/*."$id" "$SM/$id" 2>/dev/null | head -1)"; printf '%s\n' "${d:-$SM/$id}"; }
+pfrom(){ printf '^from:[[:space:]]*([a-z0-9][a-z0-9._-]*\.)?%s([[:space:]]|$)' "$1"; }
 pass=0; fail=0; warn=0
 ok(){ echo "  [PASS] $1"; pass=$((pass+1)); }
 no(){ echo "  [FAIL] $1"; fail=$((fail+1)); }
@@ -23,16 +28,16 @@ echo "== NO MCP (hard gate — the MCP-less config: --ding skips .mcp.json) =="
                        || ok "no .mcp.json in the agent dir — the agent joined via ding + the st CLI, no MCP"
 
 echo "== BOOT (the [DING]-delivered kick was drained over the CLI) =="
-if grep -lqRE '^from:[[:space:]]*'"$REQ"'([[:space:]]|$)' "$STR/$AGENT/archive" 2>/dev/null; then
+if grep -lqRE "$(pfrom "$REQ")" "$(busdir "$AGENT")/archive" 2>/dev/null; then
   ok "the requester's kick is ARCHIVED in $AGENT — boot ritual drained it via the st CLI"
-elif grep -lqRE '^from:[[:space:]]*'"$REQ"'([[:space:]]|$)' "$STR/$AGENT/inbox" 2>/dev/null; then
+elif grep -lqRE "$(pfrom "$REQ")" "$(busdir "$AGENT")/inbox" 2>/dev/null; then
   wn "the kick is still UNREAD in $AGENT inbox — received but not archived (inbox not drained)"
 else
   no "no requester kick found in $AGENT inbox/archive — did spin seed it?"
 fi
 
 echo "== THREADED REPLY (hard gate — the discriminator: st message reply, not send) =="
-reply="$(grep -lRE '^from:[[:space:]]*'"$AGENT"'([[:space:]]|$)' "$STR/$REQ/inbox" "$STR/$REQ/archive" 2>/dev/null | head -1)"
+reply="$(grep -lRE "$(pfrom "$AGENT")" "$(busdir "$REQ")/inbox" "$(busdir "$REQ")/archive" 2>/dev/null | head -1)"
 if [ -z "$reply" ]; then
   no "NO reply from $AGENT in $REQ's inbox — the agent never replied over the bus ('st message reply' may be missing/broken)"
 else

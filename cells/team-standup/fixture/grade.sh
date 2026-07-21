@@ -81,8 +81,12 @@ fi
 rm -rf "$TMP"
 
 echo "== COORDINATION (hard gate — delegate->report loop visible on the bus, no out-of-band work) =="
-msgs_from(){ local box_owner="$1" from="$2"; # search inbox+archive of an agent for messages with `from: <from>`
-  grep -lRE "^from:[[:space:]]*$from([[:space:]]|\$)" "$STR/$box_owner/inbox" "$STR/$box_owner/archive" 2>/dev/null; }
+# convoy runs the bus under st-root/smalltalk and HOST-PREFIXES real agents (e.g. hetz.ts-cos); resolve an
+# id to its on-disk bus dir (prefer the host-prefixed one; a synthetic requester like jordan stays bare).
+SM="$STR/smalltalk"
+busdir(){ local id="$1" d; d="$(ls -d "$SM"/*."$id" "$SM/$id" 2>/dev/null | head -1)"; printf '%s\n' "${d:-$SM/$id}"; }
+msgs_from(){ local bd from; bd="$(busdir "$1")"; from="$2"; # messages in <owner>'s box with `from: <from>` (host-prefix tolerant)
+  grep -lRE "^from:[[:space:]]*([a-z0-9][a-z0-9._-]*\.)?$from([[:space:]]|\$)" "$bd/inbox" "$bd/archive" 2>/dev/null; }
 brief=$(msgs_from taskflow-dev ts-cos); report=$(msgs_from ts-cos taskflow-dev)
 [ -n "$brief" ]  && ok "cos -> taskflow-dev brief present on the bus ($(echo "$brief" | wc -l | tr -d ' ') msg)" || no "no cos -> taskflow-dev brief on the bus (delegation not visible)"
 [ -n "$report" ] && ok "taskflow-dev -> cos report present on the bus ($(echo "$report" | wc -l | tr -d ' ') msg)" || no "no taskflow-dev -> cos report on the bus (execute/report not visible)"

@@ -21,8 +21,10 @@ elif [ "$n" = 0 ]; then no "token $TOKEN never processed (agent didn't act) — 
 else no "DOUBLE-ACT: token $TOKEN appears $n times in PROCESSED.log (re-drain reprocessed an already-handled item)"; fi
 
 echo "== ARCHIVE-AFTER-ACT (hard gate — inbox drained to empty, items moved to archive) =="
-inbox="$(ls "$NET/ih-agent/inbox"/*.md 2>/dev/null | wc -l | tr -d ' ')"
-arch="$(ls "$NET/ih-agent/archive"/*.md 2>/dev/null | wc -l | tr -d ' ')"
+# convoy runs the bus under st-root/smalltalk, host-prefixing the agent (e.g. hetz.ih-agent) — resolve it.
+IHBOX="$(ls -d "$NET/smalltalk"/*.ih-agent "$NET/smalltalk/ih-agent" 2>/dev/null | head -1)"; IHBOX="${IHBOX:-$NET/smalltalk/ih-agent}"
+inbox="$(ls "$IHBOX/inbox"/*.md 2>/dev/null | wc -l | tr -d ' ')"
+arch="$(ls "$IHBOX/archive"/*.md 2>/dev/null | wc -l | tr -d ' ')"
 if [ "$inbox" = 0 ] && [ "$arch" -ge 1 ]; then ok "inbox empty; $arch message(s) archived (acted items were archived, not left sitting)"
 elif [ "$inbox" != 0 ]; then no "inbox NOT empty ($inbox un-archived) — an acted-on item was left un-archived (the exact anti-pattern)"
 else wn "inbox empty but nothing in archive — did any message get processed?"; fi
