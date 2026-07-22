@@ -2,7 +2,7 @@
 
 **The bar (CoS):** not "st2 greens are honest" but **EQUIVALENCE** — every cell that PASSES on convoy must PASS on st2. A convoy-pass that st2 reddens is a blocker; red-on-both (same assertion) or agent-task-incomplete is equivalence-preserving.
 
-**Verdict: EQUIVALENCE HOLDS.** 20/24 green on st2 (all shipped convoy cells); the 4 st2-reds are **red-on-both runners for the identical assertion** (fresh convoy baselines, spin rc=0 — real runs, not harness artifacts). The **one** genuine convoy-pass/st2-red blocker (`skill-inheritance`) was found and fixed → now green. No unresolved regression.
+**Verdict: EQUIVALENCE HOLDS.** 20/24 green on st2 (all shipped convoy cells); the 4 st2-reds are **red-on-both runners** (fresh convoy baselines, spin rc=0 — real runs) — all convoy-RED, so none is a convoy-pass-that-st2-reddened blocker. The failures are **model-dependent AGENT work-product** (missed discriminator / incomplete rename / incomplete panel / views-not-wired), not runner mechanism. Same assertion class on 3 (fork-in-the-road, tui-build, signal-rename core); fork-in-the-road-codex fails in **different agent-modes** per run (see its row). The **one** genuine convoy-pass/st2-red blocker (`skill-inheritance`) was found and fixed → now green. No unresolved regression.
 
 Runner: `ST2_BIN=…/st2/target/release/st2` @ HEAD. Harness: isolated per-cell PTY_ROOT (0 prod-registry leakage), honest detector (pass = ≥1 `[PASS]` & 0 `[FAIL]` in grader output — not exit code).
 
@@ -31,8 +31,8 @@ Runner: `ST2_BIN=…/st2/target/release/st2` @ HEAD. Harness: isolated per-cell 
 | two-networks-coexist | pass* | **PASS** | deterministic isolation |
 | weird-git-setup | pass* | **PASS** | |
 | fork-in-the-road | **RED** (6P/2F) | **RED** (5P/2F) | **red-on-both, same assertion:** team missed the privacy/info-isolation discriminator + didn't escalate the values call — the naive-design miss this cell exists to catch. Model-dependent; runner-equivalent. |
-| fork-in-the-road-codex | **RED** (4P/3F) | **RED** (5P/2F) | **red-on-both, same assertion:** same privacy/escalation discriminator (codex). |
-| signal-rename | **RED** (4F) | **RED** (7F) | **red-on-both, same assertion:** rename left incomplete — node tests RED (signal-hub, signal-relay) + lingering `@acme/signal` / `signal://` / `signal/1`. Agent didn't propagate the rename across the tree. |
+| fork-in-the-road-codex | **RED** (4P/3F) | **RED** (5P/2F) | **red-on-both, DIFFERENT agent-mode (honest):** convoy = panel INCOMPLETE (only 1 proposal, no RECOMMENDATION, no sup→eval-runner reply; privacy+escalation PASSED); st2 = panel COMPLETED but MISSED the privacy/escalation discriminator. Codex panel fails model-dependently in different ways. Both convoy-RED → no equivalence violation. |
+| signal-rename | **RED** (4F) | **RED** (7F) | **red-on-both, same CORE assertion + a degree note:** rename incomplete — lingering `@acme/signal` / `signal://` / `signal/1` on BOTH. Convoy node tests PASSED; st2's attempt was more incomplete and left node tests RED too. Model-variance in how far the rename got, not runner mechanism. |
 | tui-build | **RED** (3F) | **RED** (3-4F) | **red-on-both, same assertion:** tree+cards views never wired to `network.ts` (still on the mock). (st2 run also had an incidental isolation ding.) |
 
 \* **greens' convoy column = shipped-convoy cell** (convoy-passing by construction/CI). Per the equivalence logic, only the reds need fresh convoy baselines — an st2-GREEN cannot be a convoy-pass/st2-red blocker by definition. Fresh baselines were run on the 4 reds.
