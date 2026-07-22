@@ -49,7 +49,7 @@ printf '#!/usr/bin/env sh\nexec sh "%s/cells/%s/fixture/grade.sh" "%s"\n' "$REPO
   echo "  run {"
   while IFS=$'\t' read -r id role harness dir persona; do echo "    seat \"$id\" { agent \"$id\" }"; done < "$SEATS"
   echo "    kick      { to \"$RECIP\"; from-file \"\$CATALOG/kick.md\" }"
-  echo "    done-when { to \"$REQ\"; from \"$SUP\"; timeout \"300s\" }"
+  echo "    done-when { grade; timeout \"1200s\" }"
   echo "  }"
   echo "  stage \"setup\" { exec { command \"true\" } }"
   echo "  stage \"run\"   { after \"setup\"; run }"
