@@ -40,7 +40,11 @@ mkdir -p "$CAT/$HOST/$CELL" "$CAT/scripts"
 read -r RECIP REQ KICKFILE < <(head -1 "$KICK" | tr '\t' ' ')
 sed '/^<!--/,/-->/d' "$KICKFILE" | sed '/^$/{/./!d}' > "$CAT/kick.md"
 SUP=$(awk -F'\t' '$2=="supervisor"{print $1; exit}' "$SEATS"); SUP="${SUP:-$RECIP}"
-printf '#!/usr/bin/env sh\nexec sh "%s/cells/%s/fixture/grade.sh" "%s"\n' "$REPO" "$CELL" "$SB" > "$CAT/scripts/grade.sh"; chmod +x "$CAT/scripts/grade.sh"
+# grade-wrapper: run grade.sh via ITS shebang (bash — grade.sh's use $HERE/BASH_SOURCE, [[ ]], etc.; forcing
+# `sh` breaks them → 127) and pass NO positional arg, only EVAL_SANDBOX — cells' grade.sh differ on what $1
+# means (license-mit: $1=sandbox; feature-fit: $1=worker path), so let each cell's OWN default resolve.
+ESB="$(dirname "$SB")"
+printf '#!/usr/bin/env sh\nEVAL_SANDBOX="%s" exec "%s/cells/%s/fixture/grade.sh"\n' "$ESB" "$REPO" "$CELL" > "$CAT/scripts/grade.sh"; chmod +x "$CAT/scripts/grade.sh"
 {
   echo "agent \"$CELL\" {"
   echo "  identity \"$CELL\""

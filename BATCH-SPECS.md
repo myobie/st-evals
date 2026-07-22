@@ -13,13 +13,18 @@ Two facts, uniform for **every** wrapped cell, both inspectable in `bin/gen-batc
    ```kdl
    stage "grade" { after "run"; exec { command "sh $CATALOG/scripts/grade.sh" }; verdict "grader-output" }
    ```
-   where `$CATALOG/scripts/grade.sh` is a 2-line wrapper the generator writes:
+   where `$CATALOG/scripts/grade.sh` is a wrapper the generator writes:
    ```sh
    #!/usr/bin/env sh
-   exec sh "<repo>/cells/<cell>/fixture/grade.sh" "$SB"     # the UNCHANGED repoint grader, byte-identical
+   EVAL_SANDBOX="<parent>" exec "<repo>/cells/<cell>/fixture/grade.sh"   # UNCHANGED grader, via its OWN shebang, NO positional arg
    ```
    So the batch grades with the **exact same `cells/<cell>/fixture/grade.sh`** that graded the repoint gate —
-   diff it against the gate to confirm zero edits. No inlined/edited grader anywhere.
+   diff it against the gate to confirm zero edits. The wrapper runs it via **its own shebang** (bash — graders
+   use `$HERE`/`BASH_SOURCE`, `[[ ]]`; forcing `sh` breaks them → 127) and passes **no positional arg + only
+   `EVAL_SANDBOX`**, because cells' graders differ on what `$1` means (`license-mit`: `$1`=sandbox;
+   `feature-fit`: `$1`=worker path). No-arg + `EVAL_SANDBOX` lets each cell's OWN default resolve — this is
+   **exactly how the graders ran in the repoint gate** (no-arg + `EVAL_SANDBOX`), so the invocation is
+   aligned to the proven-honest one. No inlined/edited grader anywhere.
 
 2. **The verdict is `grader-output`** — the st2 executor parses the grader's `[PASS]`/`[FAIL]` OUTPUT
    (PASS iff ≥1 `[PASS]` & 0 `[FAIL]`), never the exit code. This is the same anti-hollow-green rule the
