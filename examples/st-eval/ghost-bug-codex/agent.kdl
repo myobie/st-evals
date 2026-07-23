@@ -1,0 +1,14 @@
+agent "ghost-bug-codex" {
+  identity "ghost-bug-codex"
+  host "h"
+  type "batch"
+  run {
+    seat "gbx-fix" { agent "gbx-fix" }
+    seat "gbx-sup" { agent "gbx-sup" }
+    kick      { to "gbx-sup"; from-file "$CATALOG/kick.md" }
+    done-when { grade; timeout "1200s" }
+  }
+  stage "setup" { exec { command "true" } }
+  stage "run"   { after "setup"; run }
+  stage "grade" { after "run"; exec { command "sh $CATALOG/scripts/grade.sh" }; verdict "grader-output" }
+}

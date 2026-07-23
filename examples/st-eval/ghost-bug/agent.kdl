@@ -1,0 +1,14 @@
+agent "ghost-bug" {
+  identity "ghost-bug"
+  host "h"
+  type "batch"
+  run {
+    seat "gb-fix" { agent "gb-fix" }
+    seat "gb-sup" { agent "gb-sup" }
+    kick      { to "gb-sup"; from-file "$CATALOG/kick.md" }
+    done-when { grade; timeout "1200s" }
+  }
+  stage "setup" { exec { command "true" } }
+  stage "run"   { after "setup"; run }
+  stage "grade" { after "run"; exec { command "sh $CATALOG/scripts/grade.sh" }; verdict "grader-output" }
+}

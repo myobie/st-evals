@@ -1,0 +1,14 @@
+agent "license-mit" {
+  identity "license-mit"
+  host "h"
+  type "batch"
+  run {
+    seat "mix-worker" { agent "mix-worker" }
+    seat "mix-sup" { agent "mix-sup" }
+    kick      { to "mix-sup"; from-file "$CATALOG/kick.md" }
+    done-when { grade; timeout "1200s" }
+  }
+  stage "setup" { exec { command "true" } }
+  stage "run"   { after "setup"; run }
+  stage "grade" { after "run"; exec { command "sh $CATALOG/scripts/grade.sh" }; verdict "grader-output" }
+}
