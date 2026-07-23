@@ -1,21 +1,19 @@
 #!/usr/bin/env bash
-# HELD-OUT DISCRIMINATOR for the Docs eval. Builds a fresh reader sandbox containing ONLY the team's
-# docs + the checkout library as a MANGLED BLACK BOX (input param names stripped: `add(a,b,c)`,
-# `setTax(a)` — so peeking reveals nothing about the cents/basis-points/immutability/seal conventions;
-# the reader MUST learn them from the docs). Then runs a FRESH `claude --print` agent (no persona, no
-# bus, no memory of the design) that must build an order given in HUMAN terms ($12.50, 8% tax) and
-# write the library's total() result. Good docs -> reader gets totalCents=1944; docs missing a
-# load-bearing contract -> reader is silently wrong.
-#   ./cold-reader.sh [WORKER_REPO] [READER_SANDBOX]
+# JUDGE (the discriminator): a FRESH `claude --print` cold reader gets ONLY the team's docs + the checkout
+# library as a MANGLED BLACK BOX (input identifiers stripped, so peeking reveals nothing about the
+# cents/basis-points/immutability/seal contracts) + a task in HUMAN terms ($12.50, 8% tax). It must write
+# the library's total() to result.json. PASS iff totalCents === 1944 — i.e. the docs conveyed every
+# load-bearing contract. (Good docs -> 1944; docs missing a contract -> silently wrong.)
+#
+# PASS (exit 0): the cold reader computes totalCents === 1944 from the docs alone.
 set -uo pipefail
-W="${1:-${EVAL_SANDBOX:-./.sandbox}/docs/worker}"
-R="${2:-${EVAL_SANDBOX:-./.sandbox}/docs-reader}"
-EXPECT_TOTAL=1944
-
+ROOT="${CATALOG:-$PWD}"; W="$ROOT/worker"
+[ -d "$W" ] || { echo "FAIL: no worker repo at $W"; exit 1; }
+R="$(mktemp -d)/reader"; EXPECT_TOTAL=1944
 rm -rf "$R"; mkdir -p "$R/node_modules/checkout"
 
 # 1) the library as a MANGLED BLACK BOX (same behavior; input identifiers hidden). Output keys stay
-#    (they're part of the documented return shape). This is the "dist" a real consumer would get.
+#    (they're the documented return shape).
 cat > "$R/node_modules/checkout/index.js" <<'JS'
 const P = { SAVE10: 0.10, HALF: 0.50 };
 export function create() { return new C([], null, 0, false); }
@@ -61,31 +59,31 @@ Build this order and compute the total:
 Write the exact object returned by the cart's `total()` to `./result.json` (as JSON).
 MD
 
-# 4) pre-trust + run a FRESH headless agent (no bus, no dev-channels, no persona).
+# 4) pre-trust the reader sandbox + run a FRESH headless agent (no bus, no persona, no memory).
 sid="$(uuidgen | tr 'A-Z' 'a-z')"
-python3 - "$R" <<'PY'
-import json,sys
-p="$HOME/.claude.json"; d=json.load(open(p))
-e=d.setdefault("projects",{}).setdefault(sys.argv[1],{})
-e["hasTrustDialogAccepted"]=True; e["hasCompletedProjectOnboarding"]=True
-json.dump(d,open(p,"w"),indent=2)
+python3 - "$R" <<'PY' 2>/dev/null || true
+import json, os, sys
+p = os.path.expanduser("~/.claude.json")
+d = json.load(open(p)) if os.path.exists(p) else {}
+e = d.setdefault("projects", {}).setdefault(sys.argv[1], {})
+e["hasTrustDialogAccepted"] = True; e["hasCompletedProjectOnboarding"] = True
+json.dump(d, open(p, "w"), indent=2)
 PY
-echo "== running fresh cold-reader agent (docs-only)... =="
+echo "  running fresh cold-reader agent (docs-only)..."
 ( cd "$R" && timeout 300 claude --print --permission-mode bypassPermissions --session-id "$sid" \
   "Read task.md and do exactly what it asks. Learn the checkout API from README.md / docs only; treat the library as a black box. Write ./result.json." \
   > "$R/reader.log" 2>&1 ) || echo "  (reader print exited nonzero/timed out; grading result.json anyway)"
 
 # 5) grade
-echo "== COLD-READER RESULT =="
 if [ -f "$R/result.json" ]; then
   echo "  result.json: $(tr -d '\n' < "$R/result.json" | head -c 300)"
   GOT=$(node -e 'const fs=require("fs");const r=JSON.parse(fs.readFileSync(process.argv[1],"utf8"));console.log(r.totalCents ?? (r.total&&r.total.totalCents) ?? r.total ?? "")' "$R/result.json" 2>/dev/null)
   echo "  totalCents got=$GOT  expected=$EXPECT_TOTAL"
   if [ "$GOT" = "$EXPECT_TOTAL" ]; then
-    echo "  [PASS] COLD READER SUCCEEDED using only the docs — the docs WORK (all load-bearing contracts conveyed)."; exit 0
+    echo "PASS: cold reader succeeded using ONLY the docs — the docs WORK (all load-bearing contracts conveyed)."; rm -rf "$(dirname "$R")"; exit 0
   else
-    echo "  [FAIL] cold reader got the wrong total — docs insufficient/inaccurate (a load-bearing contract wasn't conveyed)."; exit 1
+    echo "FAIL: cold reader got the wrong total — docs insufficient/inaccurate (a load-bearing contract wasn't conveyed)."; rm -rf "$(dirname "$R")"; exit 1
   fi
 else
-  echo "  [FAIL] cold reader produced no result.json — the docs didn't enable use. See $R/reader.log"; exit 1
+  echo "FAIL: cold reader produced no result.json — the docs didn't enable use. (see reader.log)"; rm -rf "$(dirname "$R")"; exit 1
 fi
