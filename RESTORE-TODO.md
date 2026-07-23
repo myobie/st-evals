@@ -30,3 +30,14 @@ Restorable only if those commands are ever added:
 - **convoy-add-structure** — tested `convoy add` producing a seat overlay; no `st2 add` planned.
 - **convoy-init-structure** — tested `convoy init <net>` producing the network layout; no `st2 init`.
 - **convoy-init-narration** — tested `convoy init`'s narration / `--quiet` / `--json`; no `st2 init`.
+
+---
+
+## Doctor cells — reassessed against `st2 doctor` (CoS-settled; Nathan sign-offs pending)
+`st2 doctor` health-checks a RUNNING catalog (PATH + supervisor host-lock + agent tasks alive + presence);
+it is read-only and has NO auth/sign-in/hooks probe (that was convoy-doctor-specific). Outcomes:
+- **convoy-doctor-structure** — PORTED to `st2 doctor` (committed 909b17f, 4/4: healthy net → all-checks-passed exit 0; broken net → ✗ supervisor + non-zero).
+- **convoy-doctor-canwork** — FOLD into team-standup (both = a CoS stands up an org + a graded fix; team-standup already proves it, 4/4). Not ported distinctly. Nathan per-cell sign-off (routed via CoS).
+- **convoy-doctor-teardown** — FOLD (its "killed doctor reaps its org" capability is already proven by team-standup's PTY_ROOT-scoped supervise teardown reap). Not ported distinctly.
+- **convoy-doctor-preinit** — PARK with the onboarding/init path (a fresh-user pre-init doctor pointer; no `st2 init` — same bucket as first-run/bootstrap-network above).
+- **convoy-doctor-foreign-box** — NO st2 ANALOG. It discriminated honest degradation on an inconclusive AUTH probe; `st2 doctor` has no auth probe (honest-by-construction — it only checks directly-observable state). The one genuine no-equivalent cell — surfaced to Nathan for the retire-or-keep-as-flag call (per PORT-not-retire).
