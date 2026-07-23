@@ -30,6 +30,14 @@ run them. Cells that test the *newcomer stands up a network/CoS from zero* path 
   workspace-prep, st2 just runs what is rendered. Do NOT force it into an st2 eval. Nathan + the CoS will
   settle what cuts worktrees in the new stack; port it to that layer's test surface once decided.
 
+## Folded — coverage preserved elsewhere (Nathan-signed-off 2026-07-23)
+- **restorability** + **restorability-codex** — **REMOVED 2026-07-23** (git-rm'd, Nathan-signed-off). FOLDED: its
+  cold-restart-WITHOUT-resume reconstruct is exactly what **restart-continuity** already proves (cold respawn from
+  spec + lossless resume from the durable substrate, no item skipped). Its distinct "no stale CC input-queue"
+  discriminator is STRUCTURALLY ABSENT in st2 — `st2 up` always respawns COLD (never `--resume`), so it cannot
+  restore a stale input-queue (honest-by-construction, same shape as convoy-doctor-foreign-box). Nothing left to
+  port distinctly. Restore from git history only if st2 ever gains a `--resume`/session-preservation path.
+
 ## Removed, no restore planned (documented for provenance)
 These test imperative st2 commands Nathan is not building (the workflow is author spec files + run them).
 Restorable only if those commands are ever added:
