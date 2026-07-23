@@ -1,8 +1,3 @@
-<!--
-HERMETIC KICK for weird-git-setup. The ONLY task input — no live prompts. spin.sh strips this HTML header and
-drops the frontmatter+body into the worker's inbox. `from:` is a SYNTHETIC requester (morgan). Deliberately says
-NOTHING about worktrees/megarepos — the agent must figure out its own git context.
--->
 ---
 from: morgan
 subject: "clampkit: the above-range clamp is wrong — fix it + add a regression test"
