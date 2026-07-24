@@ -38,6 +38,12 @@ run them. Cells that test the *newcomer stands up a network/CoS from zero* path 
   restore a stale input-queue (honest-by-construction, same shape as convoy-doctor-foreign-box). Nothing left to
   port distinctly. Restore from git history only if st2 ever gains a `--resume`/session-preservation path.
 
+## Removed — the idea lives on as a real project, not an eval (Nathan-signed-off 2026-07-24)
+- **tui-build** — **REMOVED 2026-07-24** (git-rm'd, Nathan-signed-off). NOT retiring the idea: the greenfield
+  "team builds a real terminal UI over the agent network" is becoming an ACTUAL post-swap project — a live agent
+  team building a real TUI on the new kdl specs after the st2 swap — rather than a self-graded eval. So
+  tui-build-as-an-eval is removed; the real TUI is the follow-on work. Restorable from git history.
+
 ## Removed, no restore planned (documented for provenance)
 These test imperative st2 commands Nathan is not building (the workflow is author spec files + run them).
 Restorable only if those commands are ever added:
